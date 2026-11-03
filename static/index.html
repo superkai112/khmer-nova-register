@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KHMER NOVA • R.O.S LEGACY</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Orbitron:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--red:#ff263b;--red2:#b90019;--bg:#06080d;--line:#ffffff20;--muted:#9ca3b2}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#f4f5f8;font-family:Rajdhani,Arial,sans-serif;min-height:100vh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 12% 30%,#6e101c55,transparent 45%),radial-gradient(ellipse at 90% 70%,#192b4b55,transparent 45%),linear-gradient(120deg,#06080dee,#080a10bb);z-index:-1}
+header{height:82px;border-bottom:1px solid #ff263b35;background:#07090de8;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,5vw,75px);position:sticky;top:0;backdrop-filter:blur(16px);z-index:5}
+.brand{display:flex;align-items:center;gap:12px}.emblem{width:48px;height:48px;border:2px solid var(--red);clip-path:polygon(50% 0,100% 25%,85% 82%,50% 100%,15% 82%,0 25%);display:grid;place-items:center;color:var(--red);font-family:Orbitron;font-weight:900;font-size:18px;text-shadow:0 0 15px #ff263b88}
+.brand h1{font:800 20px Orbitron;margin:0;letter-spacing:1.2px}.brand small{display:block;color:var(--red);font:700 11px Orbitron;letter-spacing:4px;margin-top:4px}
+nav{display:flex;gap:12px}nav a{color:#dce0e9;text-decoration:none;padding:11px 18px;border:1px solid transparent;border-radius:8px;font-weight:700;letter-spacing:1px}nav a.active{border-color:#ff263b80;color:#ff5a69;background:#ff263b0c}
+.status{font:700 12px Orbitron;color:#37e59b;letter-spacing:1px}.status i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#30e89b;box-shadow:0 0 12px #30e89b;margin-right:8px}
+main{max-width:1400px;margin:0 auto;padding:38px 28px 30px;display:grid;grid-template-columns:1fr minmax(400px,560px);gap:clamp(25px,5vw,80px);align-items:center;min-height:calc(100vh - 145px)}
+.hero{position:relative;padding:30px 0}.eyebrow{color:#ff6674;font:700 12px Orbitron;letter-spacing:4px}.hero h2{font:800 clamp(38px,5vw,72px)/1.03 Orbitron;margin:18px 0 20px;text-transform:uppercase}.hero h2 span{color:var(--red);text-shadow:0 0 25px #ff263b55}.hero p{font-size:19px;color:#b7bdca;max-width:470px;line-height:1.5}
+.features{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:32px}.feature{border:1px solid var(--line);background:#ffffff05;border-radius:10px;padding:16px;display:flex;gap:12px;align-items:center}.feature b{font:700 12px Orbitron;display:block}.feature span{color:#aeb5c3;font-size:14px}.feature .ico{font-size:21px;color:var(--red)}
+.card{background:linear-gradient(145deg,#10131b,#080a0f);border:1px solid #ff263b75;border-radius:18px;padding:clamp(24px,3vw,42px);box-shadow:0 25px 80px #0008,0 0 40px #ff263b0c;position:relative;overflow:hidden}.card:before{content:"";position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.cardhead{margin-bottom:28px}.cardhead .eyebrow{font-size:10px;letter-spacing:3px}.cardhead h3{font:800 26px Orbitron;margin:10px 0}.cardhead p{color:var(--muted);margin:0;font-size:16px}
+.field{margin:15px 0}.field label{display:block;font:700 11px Orbitron;letter-spacing:1px;color:#c9ced8;margin:0 0 8px 3px}.field input{width:100%;padding:15px 16px;background:#06080dcc;border:1px solid #333b49;border-radius:8px;color:white;font:600 17px Rajdhani;outline:none;transition:.2s}.field input:focus{border-color:var(--red);box-shadow:0 0 0 3px #ff263b18}.field input::placeholder{color:#697180}
+.submit{width:100%;margin-top:20px;border:0;border-radius:8px;padding:16px;background:linear-gradient(100deg,#b80019,#ff263b);color:white;font:800 14px Orbitron;letter-spacing:1px;cursor:pointer;box-shadow:0 8px 24px #ff263b35;transition:.2s}.submit:hover{transform:translateY(-2px);filter:brightness(1.12)}
+.terms{text-align:center;color:#777f8e;font-size:13px;margin:16px 0}.terms a,.login a{color:#ff6674;text-decoration:none}.login{text-align:center;border-top:1px solid var(--line);margin-top:23px;padding-top:20px;color:#aeb5c3;font-size:15px}
+.notice{display:none;margin-top:14px;border:1px solid #ff263b80;background:#ff263b12;padding:12px;border-radius:8px;color:#ff9ba5;font-size:14px}
+footer{border-top:1px solid var(--line);padding:18px 5vw;display:flex;justify-content:space-between;color:#747d8c;font:11px Orbitron;letter-spacing:1px}
+@media(max-width:850px){main{grid-template-columns:1fr;max-width:620px;padding-top:25px}.hero{padding:10px 0}.hero h2{font-size:44px}.features{margin-top:20px}header{padding:0 18px}.status{display:none}}
+@media(max-width:480px){nav a{padding:8px;font-size:12px}.brand h1{font-size:14px}.emblem{width:38px;height:38px}.features{grid-template-columns:1fr}.card{padding:22px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><div class="emblem">KN</div><div><h1>KHMER NOVA</h1><small>R.O.S LEGACY</small></div></div>
+ <nav><a class="active" href="/">REGISTER</a><a href="#home">HOME</a></nav>
+ <div class="status"><i></i> SERVER ONLINE</div>
+</header>
+<main id="home">
+<section class="hero">
+ <div class="eyebrow">WELCOME TO THE NEXT ERA</div>
+ <h2>RISE TO<br><span>LEGEND.</span></h2>
+ <p>Enter the battlefield. Build your legacy. Join the KHMER NOVA community and begin your journey in R.O.S Legacy.</p>
+ <div class="features">
+  <div class="feature"><div class="ico">♙</div><div><b>JOIN THE COMMUNITY</b><span>Play with the Nova family</span></div></div>
+  <div class="feature"><div class="ico">⬡</div><div><b>FAIR & SECURE</b><span>Account safety matters</span></div></div>
+  <div class="feature"><div class="ico">♜</div><div><b>COMPETE & WIN</b><span>Rise through the ranks</span></div></div>
+  <div class="feature"><div class="ico">✦</div><div><b>EXCLUSIVE EVENTS</b><span>Rewards and surprises</span></div></div>
+ </div>
+</section>
+<section class="card">
+ <div class="cardhead"><div class="eyebrow">PLAYER REGISTRATION / 01</div><h3>CREATE ACCOUNT</h3><p>Start your adventure with KHMER NOVA</p></div>
+ <form id="registerForm">
+  <div class="field"><label for="username">PLAYER USERNAME</label><input id="username" name="username" minlength="3" maxlength="24" required placeholder="Choose your unique username"></div>
+  <div class="field"><label for="email">EMAIL ADDRESS</label><input id="email" name="email" type="email" required placeholder="you@example.com"></div>
+  <div class="field"><label for="password">PASSWORD</label><input id="password" type="password" minlength="8" required placeholder="Create a strong password"></div>
+  <div class="field"><label for="confirm">CONFIRM PASSWORD</label><input id="confirm" type="password" minlength="8" required placeholder="Enter password again"></div>
+  <button class="submit" type="submit">CREATE PLAYER ACCOUNT&nbsp; →</button>
+  <div id="notice" class="notice" role="status"></div>
+ </form>
+ <div class="terms">By continuing, you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a>.</div>
+ <div class="login">Already have an account? <a href="https://mirae-labs.com/register?client=ros">Official ROS registration / login</a></div>
+</section>
+</main>
+<footer><span>© KHMER NOVA • DEVELOPED BY RATANA</span><span>POWERED BY R.O.S LEGACY</span></footer>
+<script>
+const form=document.getElementById('registerForm'),notice=document.getElementById('notice');
+form.addEventListener('submit',async e=>{
+ e.preventDefault();
+ const p=document.getElementById('password').value,c=document.getElementById('confirm').value;
+ if(p!==c){notice.style.display='block';notice.textContent='Passwords do not match. Please check again.';return}
+ notice.style.display='block';notice.textContent='Checking registration service…';
+ try{
+  const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:document.getElementById('username').value,email:document.getElementById('email').value})});
+  const d=await r.json();notice.textContent=d.message||'Service response received.';
+ }catch(err){notice.textContent='Connection issue. Please try again later.'}
+});
+</script>
+</body></html>
