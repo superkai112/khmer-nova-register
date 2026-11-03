@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#050b16"><title>KHMER NOVA • R.O.S KONKHMER</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#00aaff;--blue2:#4bd1ff;--white:#edf8ff;--muted:#9db1c7}
+*{box-sizing:border-box}body{margin:0;background:#050b16;color:var(--white);font-family:Rajdhani,Arial,sans-serif;min-height:100vh}
+body:before{content:"";position:fixed;inset:0;background:linear-gradient(90deg,rgba(2,6,14,.38),rgba(2,6,14,.82) 45%,rgba(2,6,14,.78)),url("ros-battle-background.png") center/cover;z-index:-2}
+body:after{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 50% 20%,transparent 0%,rgba(1,5,12,.35) 75%);z-index:-1;pointer-events:none}
+header{height:78px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,5vw,70px);border-bottom:1px solid rgba(0,170,255,.2);background:rgba(3,8,16,.88);backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:12px}.mark{font-family:Orbitron;font-weight:800;font-size:25px;color:var(--blue);border:2px solid var(--blue);padding:7px 9px;clip-path:polygon(15% 0,85% 0,100% 25%,100% 75%,85% 100%,15% 100%,0 75%,0 25%);text-shadow:0 0 15px #009dff}
+.brandname{font-family:Orbitron;font-weight:700;letter-spacing:2px;font-size:clamp(14px,2vw,21px)}.brandname small{display:block;color:var(--blue);font-size:10px;letter-spacing:4px;margin-top:3px}
+.nav{display:flex;align-items:center;gap:28px;font-family:Orbitron;font-size:11px;letter-spacing:1px}.nav a{color:#d9e9f5;text-decoration:none}.nav a.active{color:var(--blue);border:1px solid rgba(0,170,255,.35);padding:11px 17px;border-radius:5px}
+.status{font-size:11px;color:#a7bdce;letter-spacing:1px}.status b{color:#42ffae;margin-left:8px}
+main{max-width:1320px;margin:40px auto;padding:0 24px;display:grid;grid-template-columns:minmax(0,1fr) minmax(410px,520px);gap:clamp(28px,5vw,76px);align-items:center}
+.intro{padding:25px 0 30px}.eyebrow{font-family:Orbitron;font-size:11px;letter-spacing:4px;color:var(--blue);margin-bottom:22px}
+h1{font-family:Orbitron;font-size:clamp(35px,5vw,64px);line-height:1.1;margin:0;text-shadow:0 0 30px rgba(0,144,255,.3)}h1 span{color:var(--blue)}.sub{font-family:Orbitron;font-size:14px;letter-spacing:3px;color:#b8d6e8;margin:16px 0 24px}
+.desc{font-size:20px;line-height:1.45;color:#d2e1ed;max-width:510px}.features{display:grid;grid-template-columns:1fr 1fr;gap:18px 20px;margin-top:35px}.feature{display:flex;gap:12px;align-items:center}.ico{width:36px;height:36px;border:1px solid rgba(0,170,255,.35);color:var(--blue);display:grid;place-items:center;border-radius:7px;font-size:18px}.feature strong{display:block;font-family:Orbitron;font-size:10px;letter-spacing:1px}.feature small{color:#9db1c7;font-size:13px}
+.panel{position:relative;background:linear-gradient(145deg,rgba(5,15,29,.96),rgba(2,8,17,.96));border:1px solid rgba(0,174,255,.65);border-radius:12px;padding:clamp(22px,3.5vw,42px);box-shadow:0 0 35px rgba(0,122,255,.12),inset 0 0 30px rgba(0,122,255,.035)}
+.panel:before,.panel:after{content:"";position:absolute;width:35px;height:3px;background:var(--blue);top:-1px;left:28px;box-shadow:0 0 12px var(--blue)}.panel:after{top:auto;left:auto;bottom:-1px;right:28px}
+.panelhead{text-align:center;margin-bottom:27px}.panelhead .tiny{font-family:Orbitron;color:var(--blue);letter-spacing:3px;font-size:10px}.panelhead h2{font-family:Orbitron;font-size:20px;margin:12px 0 6px}.panelhead p{margin:0;color:#a8c0d4;font-size:16px}
+.field{margin:13px 0;position:relative}.field label{display:block;font-family:Orbitron;font-size:10px;letter-spacing:1.3px;color:#b7d5e8;margin:0 0 7px 3px}
+.field input{width:100%;height:52px;background:rgba(1,8,18,.8);border:1px solid #233b51;border-radius:6px;padding:0 15px;color:white;font:500 17px Rajdhani;outline:none;transition:.2s}
+.field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,170,255,.09),0 0 18px rgba(0,170,255,.12)}.field input::placeholder{color:#62788d}
+.pwrow{display:flex;gap:8px}.pwrow input{flex:1}.toggle{width:48px;border:1px solid #233b51;background:#07111f;color:var(--blue);border-radius:6px;cursor:pointer;font-size:16px}.toggle:hover{border-color:var(--blue)}
+.check{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:#a9bfd0;margin:16px 0}.check input{accent-color:var(--blue);margin-top:4px}.check a,.login a{color:var(--blue);text-decoration:none}.submit{width:100%;height:56px;margin-top:9px;border:1px solid #00aaff;border-radius:6px;background:linear-gradient(100deg,#0069b7,#009fe9,#0068b7);color:white;font-family:Orbitron;font-size:13px;font-weight:700;letter-spacing:1.5px;cursor:pointer;box-shadow:0 0 18px rgba(0,153,255,.25);transition:.2s}.submit:hover{transform:translateY(-1px);box-shadow:0 0 28px rgba(0,153,255,.45);filter:brightness(1.12)}.submit:disabled{opacity:.65;cursor:wait}
+.login{text-align:center;color:#93a9bd;margin-top:19px;font-size:15px}.message{display:none;padding:12px;border-radius:6px;margin:14px 0;font-size:15px}.message.show{display:block}.message.error{color:#ffb5c0;border:1px solid #823344;background:#250d18}.message.info{color:#9de4ff;border:1px solid #15537a;background:#071d2b}
+footer{text-align:center;color:#7892a9;font-size:12px;letter-spacing:2px;padding:25px 20px 35px}footer b{color:var(--blue);font-family:Orbitron}
+@media(max-width:900px){main{grid-template-columns:1fr;max-width:680px;margin:20px auto}.intro{padding:18px 0}.features{margin-top:24px}.panel{order:-1}.status{display:none}}
+@media(max-width:520px){header{height:68px;padding:0 16px}.nav{gap:12px}.nav a.active{padding:9px}.brandname{font-size:13px}.mark{font-size:20px}main{padding:0 14px}.panel{padding:22px 18px}.features{grid-template-columns:1fr 1fr;gap:14px}.feature small{font-size:12px}}
+</style></head><body>
+<header><div class="brand"><div class="mark">KN</div><div class="brandname">KHMER NOVA<small>R.O.S KONKHMER</small></div></div>
+<nav class="nav"><a class="active" href="#register">REGISTER</a><a href="https://t.me/kaipewpew" target="_blank" rel="noopener">⌂ </a>Telegram</nav><div class="status">SERVER STATUS <b>● ONLINE*</b></div></header>
+<main><section class="intro"><div class="eyebrow">▰ NEXT GENERATION BATTLE ROYALE</div><h1>RULES OF<br><span>SURVIVAL.</span></h1><div class="sub">KHMER NOVA • R.O.S KONKHMER</div><p class="desc">Drop into the battlefield. Fight for survival. Create your legacy with the Khmer Nova community.</p>
+<div class="features"><div class="feature"><div class="ico">◇</div><div><strong>SECURE ACCOUNT</strong><small>Safety-first interface</small></div></div><div class="feature"><div class="ico">ϟ</div><div><strong>FAST & SIMPLE</strong><small>Quick registration flow</small></div></div><div class="feature"><div class="ico">♜</div><div><strong>BE THE LEGEND</strong><small>Own your next chapter</small></div></div><div class="feature"><div class="ico">♧</div><div><strong>COMMUNITY</strong><small>Join Khmer Nova players</small></div></div></div></section>
+<section class="panel" id="register"><div class="panelhead"><div class="tiny">— PLAYER ACCESS —</div><h2>CREATE YOUR ACCOUNT</h2><p>Start your adventure in <span style="color:var(--blue)">KHMER NOVA</span></p></div>
+<form id="form" novalidate>
+<div class="field"><label for="username">PLAYER USERNAME</label><input id="username" name="username" autocomplete="username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]+" placeholder="3–24 letters, numbers or _" required></div>
+<div class="field"><label for="email">EMAIL ADDRESS</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required></div>
+<div class="field"><label for="password">PASSWORD</label><div class="pwrow"><input id="password" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required><button class="toggle" type="button" data-toggle="password" aria-label="Show password">◉</button></div></div>
+<div class="field"><label for="confirm">CONFIRM PASSWORD</label><div class="pwrow"><input id="confirm" type="password" autocomplete="new-password" placeholder="Enter password again" required><button class="toggle" type="button" data-toggle="confirm" aria-label="Show confirmation">◉</button></div></div>
+<label class="check"><input id="terms" type="checkbox" required><span>I agree to the <a href="#" id="termsLink">Terms of Service</a> and understand this is a KHMER NOVA community interface.</span></label>
+<div class="message" id="message" role="status" aria-live="polite"></div>
+<button class="submit" id="submit" type="submit">CREATE ACCOUNT &nbsp; ↗</button></form>
+<div class="login">Already have an account? <a href="https://mirae-labs.com/register?client=ros" target="_blank" rel="noopener">Official ROS registration ↗</a></div>
+</section></main><footer>KHMER NOVA • R.O.S KONKHMER <br><br><b>DEVELOPED BY KHMER NOVA</b></footer>
+<script>
+const form=document.getElementById('form'),msg=document.getElementById('message'),btn=document.getElementById('submit');
+document.querySelectorAll('[data-toggle]').forEach(b=>b.addEventListener('click',()=>{const el=document.getElementById(b.dataset.toggle);el.type=el.type==='password'?'text':'password';b.textContent=el.type==='password'?'◉':'◎'}));
+document.getElementById('termsLink').addEventListener('click',e=>{e.preventDefault();show('Official ROS Legacy terms apply when registering through its official service.','info')});
+function show(text,type){msg.textContent=text;msg.className='message show '+type}
+form.addEventListener('submit',async e=>{e.preventDefault();msg.className='message';if(!form.reportValidity())return;
+if(document.getElementById('password').value!==document.getElementById('confirm').value){show('Passwords do not match. Please check again.','error');return}
+if(!document.getElementById('terms').checked){show('Please accept the checkbox to continue.','error');return}
+btn.disabled=true;btn.textContent='CHECKING…';
+try{const response=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:document.getElementById('username').value,email:document.getElementById('email').value})});const data=await response.json();show(data.message||'Registration is not connected yet.',response.ok?'info':'error')}
+catch(err){show('Cannot reach the backend right now. Please try again later.','error')}
+finally{btn.disabled=false;btn.textContent='CREATE ACCOUNT  ↗'}
+});
+</script></body></html>
