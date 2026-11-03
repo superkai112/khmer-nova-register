@@ -101,17 +101,18 @@ footer strong{color:#24c6ff}
 <footer>KHMER NOVA &nbsp;•&nbsp; ROS KHMER NONA<br><br><strong>DEVELOPED BY RATANA</strong></footer>
 </main>
 <script>
-document.getElementById('registerForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const p=document.getElementById('password').value;
-  const c=document.getElementById('confirm').value;
-  const n=document.getElementById('notice');
-  n.style.display='block';
-  n.textContent = p !== c ? 'Passwords do not match. Please check again.' :
-    'Design preview only: this form is not connected to the ROS account server yet.';
-});
-document.getElementById('loginLink').addEventListener('click',function(e){
-  e.preventDefault(); alert('Login link will be connected when the real account system is configured.');
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirm').value;
+
+    if (password !== confirm) {
+        alert('Passwords do not match!');
+        return;
+    }
+
+    window.location.href = 'https://mirae-labs.com/register?client=ros';
 });
 </script>
 </body>
