@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KHMER NOVA — Rise to Legend</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap');
+:root{--cyan:#00baff;--blue:#087cff;--bg:#030914;--line:rgba(0,174,255,.48);--muted:#91a8c4}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:#edf8ff;font-family:'Rajdhani',Arial,sans-serif;background:
+radial-gradient(ellipse at 50% 25%,rgba(0,80,170,.22),transparent 48%),
+linear-gradient(180deg,#020711 0%,#071426 55%,#02060d 100%);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;background-image:
+linear-gradient(rgba(0,180,255,.08) 1px,transparent 1px),
+linear-gradient(90deg,rgba(0,180,255,.08) 1px,transparent 1px);background-size:50px 50px;
+mask-image:linear-gradient(to bottom,black,transparent 85%)}
+.glow{position:fixed;width:500px;height:500px;border-radius:50%;filter:blur(100px);opacity:.15;background:#008cff;top:15%;left:calc(50% - 250px);pointer-events:none}
+.wrap{position:relative;width:min(1100px,94%);margin:auto;padding:34px 0 28px}
+header{text-align:center;margin-bottom:24px}
+.emblem{width:105px;height:105px;margin:0 auto 10px;display:grid;place-items:center;
+clip-path:polygon(50% 0,90% 18%,85% 72%,50% 100%,15% 72%,10% 18%);
+border:0;background:linear-gradient(145deg,#c9f5ff,#008bff 48%,#031d48);filter:drop-shadow(0 0 18px #008cff)}
+.emblem span{font-family:Orbitron,sans-serif;font-weight:900;font-size:38px;color:#eafaff;text-shadow:0 0 15px #00aaff}
+.brand{font-family:Orbitron,sans-serif;font-weight:800;letter-spacing:.13em;font-size:clamp(27px,5vw,52px);text-shadow:0 0 24px #007bff55}
+.tagline{color:#67cfff;letter-spacing:.5em;font-size:13px;margin-top:8px}
+.layout{display:grid;grid-template-columns:1fr minmax(340px,470px) 1fr;gap:20px;align-items:center}
+.side{min-height:390px;display:flex;flex-direction:column;justify-content:center;gap:18px;color:#9bb4d1}
+.side .line{height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.5}
+.side h2{font-family:Orbitron,sans-serif;font-size:15px;letter-spacing:.16em;color:#c9eaff}
+.side p{font-size:17px;line-height:1.35;margin:0}
+.side .stat{font-family:Orbitron,sans-serif;color:#20bdff;font-size:25px}
+.panel{position:relative;padding:30px;background:linear-gradient(145deg,rgba(7,18,35,.96),rgba(2,8,18,.94));
+border:1px solid var(--line);border-radius:18px;box-shadow:0 0 35px #007bff20,inset 0 0 25px #008cff08}
+.panel:before{content:"";position:absolute;left:22%;right:22%;top:-1px;height:2px;background:linear-gradient(90deg,transparent,#00c8ff,transparent);box-shadow:0 0 18px #00baff}
+h3{font-family:Orbitron,sans-serif;text-align:center;font-size:16px;letter-spacing:.15em;margin:0 0 24px}
+.field{margin:13px 0;position:relative}
+.field label{display:block;color:#9ddfff;font-size:12px;letter-spacing:.13em;margin:0 0 6px 4px}
+.field input{width:100%;background:#030b18;border:1px solid #203954;border-radius:8px;color:#fff;padding:14px 15px;font:600 16px Rajdhani,sans-serif;outline:none;transition:.2s}
+.field input:focus{border-color:#00baff;box-shadow:0 0 14px #00aaff25}
+.field input::placeholder{color:#617a97}
+.submit{width:100%;margin-top:14px;padding:15px;border:1px solid #54dfff;border-radius:8px;color:#fff;
+font:700 15px Orbitron,sans-serif;letter-spacing:.1em;cursor:pointer;background:linear-gradient(90deg,#0058d8,#00a9ed,#0058d8);
+box-shadow:0 0 18px #008cff55,inset 0 0 12px #9defff22;transition:.2s}
+.submit:hover{transform:translateY(-2px);box-shadow:0 0 30px #00baff99}
+.login{text-align:center;margin:20px 0 0;color:#8ca6c1;font-size:14px}
+.login a{color:#28caff;text-decoration:none;font-weight:700;letter-spacing:.1em}
+.features{display:grid;grid-template-columns:repeat(4,1fr);margin:32px 0 24px;border:1px solid #12385a;background:#06101eaa;border-radius:12px;padding:18px 8px}
+.feature{text-align:center;padding:6px 12px;border-right:1px solid #18314b}
+.feature:last-child{border:0}.feature b{display:block;color:#27bfff;font:600 12px Orbitron,sans-serif;letter-spacing:.08em;margin-bottom:6px}
+.feature span{font-size:14px;color:#8ea7c2}
+footer{text-align:center;color:#4d7196;font:12px Orbitron,sans-serif;letter-spacing:.28em;padding:12px}
+footer strong{color:#24c6ff}
+.notice{display:none;border:1px solid #1b6a91;border-radius:7px;padding:10px;margin-top:12px;color:#9fe8ff;font-size:14px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.side{display:none}.panel{max-width:480px;margin:auto;width:100%}.features{grid-template-columns:repeat(2,1fr);gap:12px}.feature:nth-child(2){border:0}.feature{border-bottom:1px solid #18314b}}
+@media(max-width:420px){.panel{padding:24px 18px}.tagline{letter-spacing:.28em}.brand{letter-spacing:.06em}}
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<main class="wrap">
+<header>
+  <div class="emblem"><span>KN</span></div>
+  <div class="brand">KHMER NOVA</div>
+  <div class="tagline">RISE TO LEGEND</div>
+</header>
+
+<div class="layout">
+  <aside class="side">
+    <div class="line"></div><h2>ENTER THE BATTLE</h2>
+    <p>Your journey begins here.<br>Build your legacy in ROS LEGACY.</p>
+    <div class="stat">KN // 01</div><div class="line"></div>
+  </aside>
+
+  <section class="panel">
+    <h3>CREATE YOUR ACCOUNT</h3>
+    <form id="registerForm">
+      <div class="field"><label for="username">USERNAME</label><input id="username" name="username" placeholder="Choose a player name" minlength="3" required></div>
+      <div class="field"><label for="email">EMAIL ADDRESS</label><input id="email" name="email" type="email" placeholder="Enter your email" required></div>
+      <div class="field"><label for="password">PASSWORD</label><input id="password" name="password" type="password" placeholder="Create a password" minlength="8" required></div>
+      <div class="field"><label for="confirm">CONFIRM PASSWORD</label><input id="confirm" name="confirm" type="password" placeholder="Re-enter your password" minlength="8" required></div>
+      <button class="submit" type="submit">✦ &nbsp; CREATE ACCOUNT &nbsp; ✦</button>
+      <div class="notice" id="notice">This is a front-end demo. Account creation is not connected to the ROS game server yet.</div>
+    </form>
+    <div class="login">ALREADY HAVE AN ACCOUNT?<br><a href="#" id="loginLink">LOGIN HERE</a></div>
+  </section>
+
+  <aside class="side">
+    <div class="line"></div><h2>YOUR LEGEND</h2>
+    <p>Join the community.<br>Rise. Fight. Become legendary.</p>
+    <div class="stat">NOVA // ONLINE</div><div class="line"></div>
+  </aside>
+</div>
+
+<section class="features">
+  <div class="feature"><b>SECURE PROFILE</b><span>Protect your identity</span></div>
+  <div class="feature"><b>QUICK START</b><span>Easy registration</span></div>
+  <div class="feature"><b>JOIN THE NOVA</b><span>Meet the community</span></div>
+  <div class="feature"><b>RISE TO LEGEND</b><span>Your battle awaits</span></div>
+</section>
+<footer>KHMER NOVA &nbsp;•&nbsp; ROS LEGACY<br><br><strong>DEVELOPED BY RATANA</strong></footer>
+</main>
+<script>
+document.getElementById('registerForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const p=document.getElementById('password').value;
+  const c=document.getElementById('confirm').value;
+  const n=document.getElementById('notice');
+  n.style.display='block';
+  n.textContent = p !== c ? 'Passwords do not match. Please check again.' :
+    'Design preview only: this form is not connected to the ROS account server yet.';
+});
+document.getElementById('loginLink').addEventListener('click',function(e){
+  e.preventDefault(); alert('Login link will be connected when the real account system is configured.');
+});
+</script>
+</body>
+</html>
