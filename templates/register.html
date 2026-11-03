@@ -54,8 +54,7 @@ form.addEventListener('submit',async e=>{e.preventDefault();msg.className='messa
 if(document.getElementById('password').value!==document.getElementById('confirm').value){show('Passwords do not match. Please check again.','error');return}
 if(!document.getElementById('terms').checked){show('Please accept the checkbox to continue.','error');return}
 btn.disabled=true;btn.textContent='CHECKING…';
-try{const response=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:document.getElementById('username').value,email:document.getElementById('email').value})});const data=await response.json();show(data.message||'Registration is not connected yet.',response.ok?'info':'error')}
-catch(err){show('Cannot reach the backend right now. Please try again later.','error')}
+try{const response = await fetch('https://khmer-nova-backend.onrender.com/api/register', {,
 finally{btn.disabled=false;btn.textContent='CREATE ACCOUNT  ↗'}
 });
 </script></body></html>
