@@ -1,1 +1,122 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet"><title>KHMER NOVA • Login</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;color:#eefaff;font-family:Rajdhani,Arial;background:#050b16}body:before{content:"";position:fixed;inset:0;background:linear-gradient(90deg,#02060a66,#020812e8 60%),url("/static/ros-battle-background.png") center/cover;z-index:-1}header{padding:20px 5vw;background:#030914dd;border-bottom:1px solid #00aaff55;font: bold 18px Orbitron;letter-spacing:2px;color:#00b8ff}main{width:min(520px,calc(100% - 28px));margin:6vh auto;background:#06101eef;border:1px solid #00aaff77;border-radius:12px;padding:clamp(22px,5vw,42px);box-shadow:0 0 35px #008cff22}.tag{text-align:center;color:#00b8ff;font:11px Orbitron;letter-spacing:3px}h1{text-align:center;font:700 23px Orbitron}.desc{text-align:center;color:#a9c3d6;margin:10px 0 25px}label{display:block;font:11px Orbitron;letter-spacing:1px;color:#b9d9ed;margin:16px 0 7px}input{width:100%;height:49px;border:1px solid #2a4058;background:#030b17;color:white;border-radius:6px;padding:0 13px;font:17px Rajdhani}input:focus{outline:1px solid #00b8ff}button{width:100%;margin-top:22px;height:52px;border:1px solid #00b8ff;border-radius:6px;background:linear-gradient(90deg,#0065ad,#00a8e8,#0065ad);color:white;font:700 12px Orbitron;letter-spacing:1px;cursor:pointer}.links{text-align:center;margin:18px;color:#9eb5c8}.links a{color:#00b8ff;text-decoration:none}.flash{padding:10px;margin:12px 0;border-radius:5px}.error{color:#ffc1c9;background:#2b101b}.success{color:#a4ffd6;background:#09261d}footer{text-align:center;padding:20px;color:#8ba5ba;font:10px Orbitron;letter-spacing:2px}</style></head><body><header>⬡ KHMER NOVA <small> / INDEPENDENT PLAYER HUB</small></header><main><div class="tag">— WELCOME BACK —</div><h1>PLAYER LOGIN</h1><p class="desc">Sign in to your community account</p>{% with messages=get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="flash {{category}}">{{{{message}}}}}</div>{% endfor %}{% endwith %}<form method="post" action="/api/login"><label>USERNAME OR EMAIL</label><input name="username" required><label>PASSWORD</label><input name="password" type="password" required><button>ENTER THE HUB ↗</button></form><div class="links">New player? <a href="/">Create account</a></div></main><footer>KHMER NOVA • DEVELOPED BY RATANA</footer></body></html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KHMER NOVA | Login</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #050b16;
+            color: #eaf6ff;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+            color: #00b8ff;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+
+        main {
+            width: 90%;
+            max-width: 420px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #081525;
+            border: 1px solid #00aaff;
+            border-radius: 12px;
+            box-shadow: 0 0 25px #008cff44;
+        }
+
+        h2 {
+            text-align: center;
+            color: #00b8ff;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            background: #030b17;
+            border: 1px solid #28445c;
+            border-radius: 6px;
+            color: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            background: #008cff;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #00b8ff;
+        }
+
+        p {
+            text-align: center;
+        }
+
+        a {
+            color: #00b8ff;
+        }
+
+        .flash {
+            text-align: center;
+            color: #ff8b9b;
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>⬡ KHMER NOVA</header>
+
+<main>
+    <h2>PLAYER LOGIN</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form action="/api/login" method="POST">
+
+        <input type="text" name="username"
+               placeholder="Username or Email" required>
+
+        <input type="password" name="password"
+               placeholder="Password" required>
+
+        <button type="submit">LOGIN</button>
+
+    </form>
+
+    <p>Don't have an account?
+       <a href="/">Register</a>
+    </p>
+</main>
+
+</body>
+</html>
