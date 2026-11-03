@@ -1,38 +1,128 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>KHMER NOVA - Register</title>
+    <title>KHMER NOVA | Register</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #050b16;
+            color: #eaf6ff;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+            color: #00b8ff;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+
+        main {
+            width: 90%;
+            max-width: 420px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #081525;
+            border: 1px solid #00aaff;
+            border-radius: 12px;
+            box-shadow: 0 0 25px #008cff44;
+        }
+
+        h2 {
+            text-align: center;
+            color: #00b8ff;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            background: #030b17;
+            border: 1px solid #28445c;
+            border-radius: 6px;
+            color: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            background: #008cff;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #00b8ff;
+        }
+
+        p {
+            text-align: center;
+        }
+
+        a {
+            color: #00b8ff;
+        }
+
+        .flash {
+            text-align: center;
+            color: #ff8b9b;
+            margin: 10px;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>KHMER NOVA</h1>
-    <h2>Create Account</h2>
+
+<header>⬡ KHMER NOVA</header>
+
+<main>
+    <h2>CREATE ACCOUNT</h2>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-                <p>{{ message }}</p>
+                <div class="flash">{{ message }}</div>
             {% endfor %}
         {% endif %}
     {% endwith %}
 
     <form action="/api/register" method="POST">
-        <input type="text" name="username" placeholder="Username" required>
-        <br><br>
 
-        <input type="email" name="email" placeholder="Email" required>
-        <br><br>
+        <input type="text" name="username"
+               placeholder="Username" required>
 
-        <input type="password" name="password" placeholder="Password" required>
-        <br><br>
+        <input type="email" name="email"
+               placeholder="Email address" required>
 
-        <input type="password" name="confirm" placeholder="Confirm Password" required>
-        <br><br>
+        <input type="password" name="password"
+               placeholder="Password (10+ characters)" required>
+
+        <input type="password" name="confirm"
+               placeholder="Confirm password" required>
 
         <button type="submit">REGISTER</button>
+
     </form>
 
-    <p>Already have an account? <a href="/login">Login</a></p>
+    <p>Already have an account?
+       <a href="/login">Login</a>
+    </p>
+</main>
+
 </body>
 </html>
