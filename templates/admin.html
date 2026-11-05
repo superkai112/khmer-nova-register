@@ -24,7 +24,7 @@ body {
 }
 
 .container {
-    max-width: 1100px;
+    max-width: 1150px;
     margin: auto;
 }
 
@@ -111,6 +111,10 @@ h1 {
     margin-top: 10px;
 }
 
+.online-number {
+    color: #00ff9d;
+}
+
 .search-box {
     width: 100%;
     background: #071426;
@@ -137,7 +141,7 @@ h1 {
 table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 750px;
+    min-width: 850px;
 }
 
 thead {
@@ -169,6 +173,46 @@ tr:hover td {
     font-size: 13px;
 }
 
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.status-online {
+    color: #00ff9d;
+}
+
+.status-offline {
+    color: #75869a;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-online .dot {
+    background: #00ff9d;
+    box-shadow: 0 0 8px #00ff9d;
+}
+
+.status-offline .dot {
+    background: #65758a;
+}
+
+.admin-badge {
+    color: #00eaff;
+    font-size: 12px;
+    border: 1px solid #00eaff;
+    padding: 5px 9px;
+}
+
 .delete-btn {
     border: 1px solid #ff3864;
     background: transparent;
@@ -182,13 +226,6 @@ tr:hover td {
 .delete-btn:hover {
     background: #ff3864;
     color: white;
-}
-
-.admin-badge {
-    color: #00eaff;
-    font-size: 12px;
-    border: 1px solid #00eaff;
-    padding: 5px 9px;
 }
 
 .empty {
@@ -230,18 +267,29 @@ tr:hover td {
     </header>
 
     <h1>CONTROL CENTER</h1>
-    <p class="subtitle">Welcome, Administrator. Manage your community players.</p>
+    <p class="subtitle">
+        Welcome, Administrator. Monitor your community in real time.
+    </p>
 
     <div class="stats">
+
         <div class="stat-card">
             <div class="stat-title">TOTAL REGISTERED PLAYERS</div>
-            <div class="stat-number" id="totalCount">{{ users|length }}</div>
+            <div class="stat-number">{{ total_count }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">PLAYERS CURRENTLY ONLINE</div>
+            <div class="stat-number online-number" id="onlineCount">
+                {{ online_count }}
+            </div>
         </div>
 
         <div class="stat-card">
             <div class="stat-title">SYSTEM STATUS</div>
             <div class="stat-number">ONLINE</div>
         </div>
+
     </div>
 
     <input
@@ -259,30 +307,50 @@ tr:hover td {
                     <th>PLAYER ID</th>
                     <th>USERNAME</th>
                     <th>EMAIL</th>
-                    <th>REGISTERED</th>
+                    <th>STATUS</th>
+                    <th>LAST SEEN</th>
                     <th>ACTION</th>
                 </tr>
             </thead>
 
             <tbody id="playerTable">
+
                 {% for user in users %}
                 <tr>
                     <td class="player-id">KN-{{ user.id }}</td>
+
                     <td>
                         {% if user.username.lower() == 'ratanasorn13' %}
-                            <span class="admin-badge">{{ user.username }} (ADMIN)</span>
+                            <span class="admin-badge">
+                                {{ user.username }} (ADMIN)
+                            </span>
                         {% else %}
                             {{ user.username }}
                         {% endif %}
                     </td>
+
                     <td>{{ user.email }}</td>
+
                     <td>
-                        {% if user.created_at %}
-                            {{ user.created_at.strftime('%Y-%m-%d') }}
+                        {% if user.is_online %}
+                            <span class="status status-online">
+                                <span class="dot"></span> ONLINE
+                            </span>
                         {% else %}
-                            Unknown
+                            <span class="status status-offline">
+                                <span class="dot"></span> OFFLINE
+                            </span>
                         {% endif %}
                     </td>
+
+                    <td>
+                        {% if user.last_seen %}
+                            {{ user.last_seen.strftime('%Y-%m-%d %H:%M:%S') }}
+                        {% else %}
+                            Never
+                        {% endif %}
+                    </td>
+
                     <td>
                         {% if user.username.lower() == 'ratanasorn13' %}
                             <span class="admin-badge">PROTECTED</span>
@@ -290,7 +358,7 @@ tr:hover td {
                             <form
                                 method="POST"
                                 action="/admin/delete/{{ user.id }}"
-                                onsubmit="return confirm('Are you sure you want to delete {{ user.username }}? This cannot be undone.');"
+                                onsubmit="return confirm('Are you sure you want to delete this player? This cannot be undone.');"
                             >
                                 <input
                                     type="hidden"
@@ -305,6 +373,7 @@ tr:hover td {
                     </td>
                 </tr>
                 {% endfor %}
+
             </tbody>
         </table>
 
@@ -314,7 +383,7 @@ tr:hover td {
     </div>
 
     <div class="footer">
-        KHMER NOVA • SECURE ADMINISTRATION • 2026
+        KHMER NOVA • REAL-TIME PLAYER MONITORING • 2026
     </div>
 
 </div>
@@ -331,8 +400,12 @@ search.addEventListener('input', function () {
         row.style.display = text.includes(query) ? '' : 'none';
     });
 });
+
+// Refresh admin panel every 15 seconds
+setTimeout(function () {
+    location.reload();
+}, 15000);
 </script>
 
 </body>
 </html>
-
