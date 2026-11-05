@@ -7,7 +7,10 @@ import psycopg
 from psycopg.rows import dict_row
 from psycopg.errors import UniqueViolation
 
-from flask import Flask, request, jsonify, render_template, session, redirect
+from flask import (
+    Flask, request, jsonify, render_template,
+    session, redirect
+)
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -19,6 +22,9 @@ app.secret_key = os.environ.get(
 )
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
+
+# Your administrator username
+ADMIN_USERNAME = "ratanasorn13"
 
 
 # ---------- DATABASE ----------
@@ -59,12 +65,21 @@ def init_db():
         """)
 
 
-# Initialize database when the application starts
 try:
     init_db()
     print("Supabase PostgreSQL connected successfully!")
 except Exception as e:
     print("Database initialization error:", e)
+
+
+# ---------- ADMIN SECURITY ----------
+
+def is_admin():
+    return (
+        "uid" in session
+        and session.get("username", "").lower()
+        == ADMIN_USERNAME.lower()
+    )
 
 
 # ---------- PAGES ----------
@@ -87,6 +102,78 @@ def dashboard():
     return render_template("dashboard.html")
 
 
+# ---------- ADMIN PANEL ----------
+
+@app.route("/admin")
+def admin_panel():
+    if "uid" not in session:
+        return redirect("/login")
+
+    if not is_admin():
+        return "Access denied. Admins only.", 403
+
+    try:
+        with get_db() as db:
+            users = db.execute("""
+                SELECT id, username, email, created_at
+                FROM users
+                ORDER BY id DESC
+            """).fetchall()
+
+        # CSRF protection token for delete actions
+        if "admin_csrf" not in session:
+            session["admin_csrf"] = secrets.token_urlsafe(32)
+
+        return render_template(
+            "admin.html",
+            users=users,
+            csrf_token=session["admin_csrf"]
+        )
+
+    except Exception as e:
+        print("Admin panel error:", e)
+        return "Could not load accounts. Please try again.", 500
+
+
+# ---------- DELETE USER ----------
+
+@app.route("/admin/delete/<int:user_id>", methods=["POST"])
+def admin_delete_user(user_id):
+    if "uid" not in session:
+        return redirect("/login")
+
+    if not is_admin():
+        return "Access denied. Admins only.", 403
+
+    submitted_token = request.form.get("csrf_token", "")
+    session_token = session.get("admin_csrf", "")
+
+    if not session_token or not secrets.compare_digest(
+        submitted_token, session_token
+    ):
+        return "Invalid security token. Please refresh the page.", 403
+
+    # Prevent deleting the administrator's own account
+    if user_id == session["uid"]:
+        return "You cannot delete your own admin account.", 400
+
+    try:
+        with get_db() as db:
+            db.execute("""
+                DELETE FROM users
+                WHERE id = %s
+                AND LOWER(username) <> LOWER(%s)
+            """, (user_id, ADMIN_USERNAME))
+
+        return redirect("/admin")
+
+    except Exception as e:
+        print("Delete user error:", e)
+        return "Could not delete this account.", 500
+
+
+# ---------- LOGOUT ----------
+
 @app.route("/logout")
 def logout():
     session.clear()
@@ -97,7 +184,6 @@ def logout():
 
 @app.route("/api/register", methods=["POST"])
 def register_api():
-
     data = request.get_json(silent=True) or request.form
 
     username = str(data.get("username", "")).strip()
@@ -162,7 +248,6 @@ def register_api():
 
 @app.route("/api/login", methods=["POST"])
 def login_api():
-
     data = request.get_json(silent=True) or request.form
 
     identifier = str(
