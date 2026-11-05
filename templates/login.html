@@ -2,121 +2,495 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>KHMER NOVA | Login</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KHMER NOVA | Login</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: #050b16;
-            color: #eaf6ff;
-            font-family: Arial, sans-serif;
-        }
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        header {
-            padding: 20px;
-            text-align: center;
-            color: #00b8ff;
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 3px;
-        }
+:root {
+    --cyan: #00eaff;
+    --blue: #008cff;
+    --dark: #030712;
+    --panel: rgba(5, 18, 38, 0.85);
+}
 
-        main {
-            width: 90%;
-            max-width: 420px;
-            margin: 50px auto;
-            padding: 30px;
-            background: #081525;
-            border: 1px solid #00aaff;
-            border-radius: 12px;
-            box-shadow: 0 0 25px #008cff44;
-        }
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse at 50% 40%, #102c50 0%, #050b19 50%, #01030a 100%);
+    font-family: 'Rajdhani', sans-serif;
+    color: white;
+}
 
-        h2 {
-            text-align: center;
-            color: #00b8ff;
-        }
+/* Animated background */
 
-        input {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            background: #030b17;
-            border: 1px solid #28445c;
-            border-radius: 6px;
-            color: white;
-        }
+.background {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
 
-        button {
-            width: 100%;
-            padding: 15px;
-            margin-top: 15px;
-            background: #008cff;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
+.grid {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    left: -50%;
+    top: 20%;
+    background-image:
+        linear-gradient(#00aaff12 1px, transparent 1px),
+        linear-gradient(90deg, #00aaff12 1px, transparent 1px);
+    background-size: 50px 50px;
+    transform: perspective(500px) rotateX(60deg);
+    animation: gridMove 15s linear infinite;
+}
 
-        button:hover {
-            background: #00b8ff;
-        }
+@keyframes gridMove {
+    from { background-position: 0 0; }
+    to { background-position: 0 500px; }
+}
 
-        p {
-            text-align: center;
-        }
+.orb {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: #008cff18;
+    filter: blur(100px);
+    animation: pulse 5s infinite alternate;
+}
 
-        a {
-            color: #00b8ff;
-        }
+.orb.one {
+    top: -100px;
+    left: -100px;
+}
 
-        .flash {
-            text-align: center;
-            color: #ff8b9b;
-            margin: 10px;
-        }
-    </style>
+.orb.two {
+    bottom: -150px;
+    right: -100px;
+    background: #00eaff12;
+}
+
+@keyframes pulse {
+    from { opacity: 0.3; transform: scale(0.8); }
+    to { opacity: 0.8; transform: scale(1.2); }
+}
+
+/* Main container */
+
+.container {
+    position: relative;
+    width: 440px;
+    max-width: 92%;
+    padding: 40px 35px;
+    background: var(--panel);
+    backdrop-filter: blur(20px);
+    border: 1px solid #00bfff55;
+    box-shadow:
+        0 0 40px #008cff18,
+        inset 0 0 30px #008cff08;
+    clip-path: polygon(
+        0 20px, 20px 0,
+        calc(100% - 20px) 0, 100% 20px,
+        100% calc(100% - 20px),
+        calc(100% - 20px) 100%,
+        20px 100%, 0 calc(100% - 20px)
+    );
+    animation: appear 0.8s ease;
+}
+
+@keyframes appear {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Logo */
+
+.logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo-symbol {
+    font-size: 32px;
+    color: var(--cyan);
+    text-shadow: 0 0 20px var(--cyan);
+}
+
+.logo h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: 5px;
+    color: #fff;
+    text-shadow: 0 0 15px #00aaff66;
+}
+
+.logo h1 span {
+    color: var(--cyan);
+}
+
+.logo p {
+    margin-top: 8px;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #7599b8;
+}
+
+/* Heading */
+
+.heading {
+    margin-bottom: 25px;
+}
+
+.heading h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--cyan);
+}
+
+.heading p {
+    margin-top: 7px;
+    font-size: 14px;
+    color: #7796b5;
+}
+
+/* Inputs */
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: #8db5d8;
+    margin-bottom: 8px;
+}
+
+.input-box {
+    position: relative;
+}
+
+.input-box input {
+    width: 100%;
+    height: 50px;
+    padding: 0 45px 0 15px;
+    color: white;
+    background: #020a16;
+    border: 1px solid #17466a;
+    outline: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.input-box input:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 15px #00eaff20;
+}
+
+.input-box input::placeholder {
+    color: #45617c;
+}
+
+.input-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #00bfff;
+    font-size: 18px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--cyan);
+    cursor: pointer;
+    font-size: 11px;
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* Options */
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0 25px;
+    font-size: 13px;
+}
+
+.remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #88a8c8;
+    cursor: pointer;
+}
+
+.remember input {
+    accent-color: var(--cyan);
+}
+
+.options a {
+    color: var(--cyan);
+    text-decoration: none;
+}
+
+/* Login button */
+
+.login-btn {
+    position: relative;
+    width: 100%;
+    height: 52px;
+    border: none;
+    background: linear-gradient(90deg, #0077ff, #00cfff);
+    color: #00101d;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 800;
+    letter-spacing: 2px;
+    font-size: 14px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+.login-btn:hover {
+    box-shadow: 0 0 25px #00aaff77;
+    transform: translateY(-2px);
+}
+
+.login-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* Message */
+
+#message {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 15px;
+    color: #ff718b;
+}
+
+/* Register */
+
+.register {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 14px;
+    color: #7995b3;
+}
+
+.register a {
+    color: var(--cyan);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.register a:hover {
+    text-shadow: 0 0 10px var(--cyan);
+}
+
+/* Footer */
+
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #38516b;
+}
+
+/* Mobile */
+
+@media (max-width: 480px) {
+    .container {
+        padding: 30px 22px;
+    }
+
+    .logo h1 {
+        font-size: 22px;
+    }
+}
+</style>
 </head>
 
 <body>
 
-<header>⬡ KHMER NOVA</header>
+<div class="background">
+    <div class="grid"></div>
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+</div>
 
-<main>
-    <h2>PLAYER LOGIN</h2>
+<div class="container">
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="flash">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+    <div class="logo">
+        <div class="logo-symbol">⬡</div>
+        <h1>KHMER <span>NOVA</span></h1>
+        <p>R.O.S LEGACY COMMUNITY</p>
+    </div>
 
-    <form action="/api/login" method="POST">
+    <div class="heading">
+        <h2>PLAYER LOGIN</h2>
+        <p>Access your battlefield account</p>
+    </div>
 
-        <input type="text" name="username"
-               placeholder="Username or Email" required>
+    <form id="loginForm">
 
-        <input type="password" name="password"
-               placeholder="Password" required>
+        <div class="input-group">
+            <label>USERNAME / EMAIL</label>
+            <div class="input-box">
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="Enter your username"
+                    required
+                >
+                <span class="input-icon">◈</span>
+            </div>
+        </div>
 
-        <button type="submit">LOGIN</button>
+        <div class="input-group">
+            <label>PASSWORD</label>
+            <div class="input-box">
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    required
+                >
+                <button
+                    type="button"
+                    class="toggle-password"
+                    id="togglePassword"
+                >SHOW</button>
+            </div>
+        </div>
+
+        <div class="options">
+            <label class="remember">
+                <input type="checkbox" id="remember">
+                Remember me
+            </label>
+
+            <a href="#" onclick="alert('Please contact KHMER NOVA support for password recovery.')">
+                Forgot password?
+            </a>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginButton">
+            CONNECT TO BATTLEFIELD ↗
+        </button>
+
+        <div id="message"></div>
 
     </form>
 
-    <p>Don't have an account?
-       <a href="/">Register</a>
-    </p>
-</main>
+    <div class="register">
+        New player?
+        <a href="/">CREATE ACCOUNT ↗</a>
+    </div>
+
+    <div class="footer">
+        KHMER NOVA © 2026 • SYSTEM ONLINE
+    </div>
+
+</div>
+
+<script>
+const form = document.getElementById('loginForm');
+const message = document.getElementById('message');
+const button = document.getElementById('loginButton');
+const passwordInput = document.getElementByById
+    ? document.getElementById('password')
+    : document.getElementById('password');
+
+// Show / Hide password
+document.getElementById('togglePassword').addEventListener('click', function() {
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        this.textContent = 'HIDE';
+    } else {
+        passwordInput.type = 'password';
+        this.textContent = 'SHOW';
+    }
+});
+
+// Login system
+form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value.trim();
+    const password = passwordInput.value;
+
+    button.disabled = true;
+    button.textContent = 'AUTHENTICATING...';
+    message.textContent = '';
+
+    try {
+        const response = await fetch(
+            'https://khmer-nova-backend.onrender.com/api/login',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+            message.style.color = '#00ff99';
+            message.textContent = 'ACCESS GRANTED ✓';
+
+            setTimeout(() => {
+                window.location.href =
+                    'https://khmer-nova-backend.onrender.com/dashboard';
+            }, 1000);
+        } else {
+            message.style.color = '#ff718b';
+            message.textContent =
+                data.message || 'Invalid username or password.';
+        }
+
+    } catch (error) {
+        message.style.color = '#ff718b';
+        message.textContent =
+            'SERVER CONNECTION FAILED. TRY AGAIN.';
+    }
+
+    button.disabled = false;
+    button.textContent = 'CONNECT TO BATTLEFIELD ↗';
+});
+</script>
 
 </body>
 </html>
