@@ -23,8 +23,11 @@ app.secret_key = os.environ.get(
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
-# Your administrator username
+# Administrator username
 ADMIN_USERNAME = "ratanasorn13"
+
+# Player is online if active within the last 60 seconds
+ONLINE_TIMEOUT_SECONDS = 60
 
 
 # ---------- DATABASE ----------
@@ -42,6 +45,7 @@ def get_db():
 
 def init_db():
     with get_db() as db:
+
         db.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id BIGSERIAL PRIMARY KEY,
@@ -50,6 +54,12 @@ def init_db():
                 password_hash TEXT NOT NULL,
                 created_at TIMESTAMPTZ DEFAULT NOW()
             )
+        """)
+
+        # Add online tracking to existing users table
+        db.execute("""
+            ALTER TABLE users
+            ADD COLUMN IF NOT EXISTS last_seen TIMESTAMPTZ
         """)
 
         db.execute("""
@@ -70,6 +80,33 @@ try:
     print("Supabase PostgreSQL connected successfully!")
 except Exception as e:
     print("Database initialization error:", e)
+
+
+# ---------- ONLINE PLAYER SYSTEM ----------
+
+@app.route("/api/heartbeat", methods=["POST"])
+def heartbeat():
+
+    if "uid" not in session:
+        return jsonify({"online": False}), 401
+
+    try:
+        with get_db() as db:
+            db.execute("""
+                UPDATE users
+                SET last_seen = NOW()
+                WHERE id = %s
+            """, (session["uid"],))
+
+        return jsonify({"online": True})
+
+    except Exception as e:
+        print("Heartbeat error:", e)
+
+        return jsonify({
+            "online": False,
+            "message": "Could not update online status."
+        }), 500
 
 
 # ---------- ADMIN SECURITY ----------
@@ -96,6 +133,7 @@ def login_page():
 
 @app.route("/dashboard")
 def dashboard():
+
     if "uid" not in session:
         return redirect("/login")
 
@@ -106,6 +144,7 @@ def dashboard():
 
 @app.route("/admin")
 def admin_panel():
+
     if "uid" not in session:
         return redirect("/login")
 
@@ -114,24 +153,52 @@ def admin_panel():
 
     try:
         with get_db() as db:
+
+            # Get all players and their online status
             users = db.execute("""
-                SELECT id, username, email, created_at
+                SELECT
+                    id,
+                    username,
+                    email,
+                    created_at,
+                    last_seen,
+                    CASE
+                        WHEN last_seen >= NOW() - INTERVAL '60 seconds'
+                        THEN TRUE
+                        ELSE FALSE
+                    END AS is_online
                 FROM users
                 ORDER BY id DESC
             """).fetchall()
 
-        # CSRF protection token for delete actions
+            # Count currently online players
+            online_count = db.execute("""
+                SELECT COUNT(*) AS total
+                FROM users
+                WHERE last_seen >= NOW() - INTERVAL '60 seconds'
+            """).fetchone()["total"]
+
+            # Count all registered players
+            total_count = db.execute("""
+                SELECT COUNT(*) AS total
+                FROM users
+            """).fetchone()["total"]
+
+        # CSRF security token
         if "admin_csrf" not in session:
             session["admin_csrf"] = secrets.token_urlsafe(32)
 
         return render_template(
             "admin.html",
             users=users,
+            online_count=online_count,
+            total_count=total_count,
             csrf_token=session["admin_csrf"]
         )
 
     except Exception as e:
         print("Admin panel error:", e)
+
         return "Could not load accounts. Please try again.", 500
 
 
@@ -139,6 +206,7 @@ def admin_panel():
 
 @app.route("/admin/delete/<int:user_id>", methods=["POST"])
 def admin_delete_user(user_id):
+
     if "uid" not in session:
         return redirect("/login")
 
@@ -153,7 +221,7 @@ def admin_delete_user(user_id):
     ):
         return "Invalid security token. Please refresh the page.", 403
 
-    # Prevent deleting the administrator's own account
+    # Prevent administrator account deletion
     if user_id == session["uid"]:
         return "You cannot delete your own admin account.", 400
 
@@ -169,6 +237,7 @@ def admin_delete_user(user_id):
 
     except Exception as e:
         print("Delete user error:", e)
+
         return "Could not delete this account.", 500
 
 
@@ -176,7 +245,21 @@ def admin_delete_user(user_id):
 
 @app.route("/logout")
 def logout():
+
+    if "uid" in session:
+        try:
+            with get_db() as db:
+                db.execute("""
+                    UPDATE users
+                    SET last_seen = NOW() - INTERVAL '2 minutes'
+                    WHERE id = %s
+                """, (session["uid"],))
+
+        except Exception as e:
+            print("Logout status error:", e)
+
     session.clear()
+
     return redirect("/login")
 
 
@@ -184,6 +267,7 @@ def logout():
 
 @app.route("/api/register", methods=["POST"])
 def register_api():
+
     data = request.get_json(silent=True) or request.form
 
     username = str(data.get("username", "")).strip()
@@ -248,6 +332,7 @@ def register_api():
 
 @app.route("/api/login", methods=["POST"])
 def login_api():
+
     data = request.get_json(silent=True) or request.form
 
     identifier = str(
@@ -264,6 +349,7 @@ def login_api():
 
     try:
         with get_db() as db:
+
             user = db.execute("""
                 SELECT id, username, email, password_hash
                 FROM users
@@ -281,8 +367,17 @@ def login_api():
             }), 401
 
         session.clear()
+
         session["uid"] = user["id"]
         session["username"] = user["username"]
+
+        # Mark player online immediately after login
+        with get_db() as db:
+            db.execute("""
+                UPDATE users
+                SET last_seen = NOW()
+                WHERE id = %s
+            """, (user["id"],))
 
         return jsonify({
             "success": True,
@@ -304,6 +399,7 @@ def login_api():
 
 @app.route("/health")
 def health():
+
     try:
         with get_db() as db:
             db.execute("SELECT 1")
