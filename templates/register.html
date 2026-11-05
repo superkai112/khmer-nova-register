@@ -52,12 +52,21 @@ const form = document.getElementById('form');
 const msg = document.getElementById('message');
 const btn = document.getElementById('submit');
 
-document.querySelectorAll('[data-toggle]').forEach(button => {
-    button.addEventListener('click', () => {
-        const input = document.getElementById(button.dataset.toggle);
-        input.type = input.type === 'password' ? 'text' : 'password';
+
+document.querySelectorAll('.toggle').forEach(button => {
+    button.addEventListener('click', function () {
+        const input = this.parentElement.querySelector('input');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            this.textContent = 'HIDE';
+        } else {
+            input.type = 'password';
+            this.textContent = 'SHOW';
+        }
     });
 });
+
 
 function showMessage(text, type) {
     msg.textContent = text;
