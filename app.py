@@ -11,7 +11,7 @@ from flask import Flask, request, jsonify, render_template, session, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static", static_url_path="/static")
 
 app.secret_key = os.environ.get(
     "SECRET_KEY",
