@@ -171,17 +171,23 @@ def logout():
 
 
 # HEALTH CHECK
-@app.route("/health", methods=["GET"])
-def health():
-    return jsonify(
-        status="ok",
-        service="KHMER NOVA independent accounts"
-    )
 
+@app.route("/debug-users")
+def debug_users():
+    with conn() as database:
+        users = database.execute(
+            "SELECT id, username, email FROM users"
+        ).fetchall()
 
-# START SERVER
-if __name__ == "__main__":
-    app.run(
-        host="0.0.0.0",
-        port=int(os.environ.get("PORT", 5000))
-    )
+    return jsonify({
+        "database": DB,
+        "total_users": len(users),
+        "users": [
+            {
+                "id": user["id"],
+                "username": user["username"],
+                "email": user["email"]
+            }
+            for user in users
+        ]
+    })
