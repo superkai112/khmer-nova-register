@@ -1,1 +1,412 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet"><title>KHMER NOVA • Hub</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;color:#eefaff;font-family:Rajdhani,Arial;background:#050b16}body:before{content:"";position:fixed;inset:0;background:linear-gradient(90deg,#02060a66,#020812e8 60%),url("/static/ros-battle-background.png") center/cover;z-index:-1}header{padding:20px 5vw;background:#030914dd;border-bottom:1px solid #00aaff55;font: bold 18px Orbitron;letter-spacing:2px;color:#00b8ff}main{width:min(520px,calc(100% - 28px));margin:6vh auto;background:#06101eef;border:1px solid #00aaff77;border-radius:12px;padding:clamp(22px,5vw,42px);box-shadow:0 0 35px #008cff22}.tag{text-align:center;color:#00b8ff;font:11px Orbitron;letter-spacing:3px}h1{text-align:center;font:700 23px Orbitron}.desc{text-align:center;color:#a9c3d6;margin:10px 0 25px}label{display:block;font:11px Orbitron;letter-spacing:1px;color:#b9d9ed;margin:16px 0 7px}input{width:100%;height:49px;border:1px solid #2a4058;background:#030b17;color:white;border-radius:6px;padding:0 13px;font:17px Rajdhani}input:focus{outline:1px solid #00b8ff}button{width:100%;margin-top:22px;height:52px;border:1px solid #00b8ff;border-radius:6px;background:linear-gradient(90deg,#0065ad,#00a8e8,#0065ad);color:white;font:700 12px Orbitron;letter-spacing:1px;cursor:pointer}.links{text-align:center;margin:18px;color:#9eb5c8}.links a{color:#00b8ff;text-decoration:none}.flash{padding:10px;margin:12px 0;border-radius:5px}.error{color:#ffc1c9;background:#2b101b}.success{color:#a4ffd6;background:#09261d}footer{text-align:center;padding:20px;color:#8ba5ba;font:10px Orbitron;letter-spacing:2px}</style></head><body><header>⬡ KHMER NOVA <small> / INDEPENDENT PLAYER HUB</small></header><main><div class="tag">— ACCESS GRANTED —</div><h1>WELCOME, {{ username }}!</h1><p class="desc">Your KHMER NOVA community account is active.</p><p>More player features can be added here.</p><form method="post" action="/logout"><button>LOG OUT</button></form></main><footer>KHMER NOVA • DEVELOPED BY RATANA</footer></body></html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KHMER NOVA | Player Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #050812;
+            color: #eaf6ff;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, #10294c80, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, #30104b70, transparent 50%);
+            pointer-events: none;
+        }
+
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(#00e5ff08 1px, transparent 1px),
+                linear-gradient(90deg, #00e5ff08 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: linear-gradient(to bottom, black, transparent 90%);
+            pointer-events: none;
+        }
+
+        .navbar {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 7%;
+            border-bottom: 1px solid #00e5ff25;
+            background: #050812c9;
+            backdrop-filter: blur(12px);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: #00e5ff;
+            text-shadow: 0 0 15px #00e5ff70;
+        }
+
+        .logo span {
+            color: #fff;
+        }
+
+        .status {
+            font-size: 13px;
+            letter-spacing: 2px;
+            color: #7dffcb;
+        }
+
+        .status::before {
+            content: "● ";
+            text-shadow: 0 0 8px #7dffcb;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 65px auto;
+            padding: 0 22px;
+        }
+
+        .welcome {
+            margin-bottom: 35px;
+        }
+
+        .welcome .small-title {
+            color: #00e5ff;
+            font-size: 13px;
+            letter-spacing: 5px;
+            margin-bottom: 12px;
+        }
+
+        .welcome h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(25px, 5vw, 42px);
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .welcome h1 span {
+            color: #00e5ff;
+            text-shadow: 0 0 20px #00e5ff50;
+        }
+
+        .welcome p {
+            color: #8499b5;
+            font-size: 17px;
+            margin-top: 12px;
+        }
+
+        .profile-card {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0b172a, #101025);
+            border: 1px solid #00e5ff40;
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 0 35px #00e5ff0b;
+        }
+
+        .profile-card::before {
+            content: "";
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: #00e5ff0c;
+            filter: blur(35px);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .card-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            letter-spacing: 3px;
+            color: #91a9c9;
+        }
+
+        .badge {
+            color: #7dffcb;
+            border: 1px solid #7dffcb55;
+            background: #7dffcb0c;
+            padding: 7px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+
+        .profile-content {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .avatar {
+            width: 90px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #00e5ff20, #a855f720);
+            border: 1px solid #00e5ff70;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 35px;
+            font-weight: 800;
+            color: #00e5ff;
+            box-shadow: 0 0 25px #00e5ff15;
+        }
+
+        .player-info h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            overflow-wrap: anywhere;
+        }
+
+        .player-info p {
+            margin-top: 10px;
+            color: #849ab9;
+            font-size: 15px;
+            letter-spacing: 1px;
+        }
+
+        .player-info p span {
+            color: #00e5ff;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, #00e5ff40, transparent);
+            margin: 30px 0;
+        }
+
+        .features-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .feature {
+            padding: 22px;
+            border-radius: 12px;
+            background: #0a1220;
+            border: 1px solid #ffffff10;
+            transition: 0.3s;
+        }
+
+        .feature:hover {
+            border-color: #00e5ff60;
+            transform: translateY(-3px);
+        }
+
+        .feature .icon {
+            font-size: 25px;
+            margin-bottom: 14px;
+        }
+
+        .feature h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            color: #00e5ff;
+        }
+
+        .feature p {
+            color: #8294ad;
+            font-size: 15px;
+        }
+
+        .logout-area {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .logout-btn {
+            display: inline-block;
+            padding: 13px 35px;
+            color: #ff7185;
+            border: 1px solid #ff718555;
+            background: #ff718510;
+            border-radius: 8px;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ff718525;
+            box-shadow: 0 0 20px #ff718520;
+        }
+
+        footer {
+            position: relative;
+            text-align: center;
+            padding: 30px 15px;
+            color: #52627c;
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 18px 5%;
+            }
+
+            .logo {
+                font-size: 17px;
+            }
+
+            .status {
+                font-size: 10px;
+            }
+
+            .container {
+                margin: 40px auto;
+            }
+
+            .profile-card {
+                padding: 22px;
+            }
+
+            .avatar {
+                width: 70px;
+                height: 70px;
+                font-size: 27px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="grid-bg"></div>
+
+<nav class="navbar">
+    <div class="logo">KHMER <span>NOVA</span></div>
+    <div class="status">SYSTEM ONLINE</div>
+</nav>
+
+<main class="container">
+
+    <section class="welcome">
+        <div class="small-title">— ACCESS GRANTED —</div>
+
+        <h1>
+            WELCOME,
+            <span>{{ session.get('username', 'PLAYER') }}!</span>
+        </h1>
+
+        <p>Welcome to the KHMER NOVA gaming community.</p>
+    </section>
+
+    <section class="profile-card">
+
+        <div class="card-top">
+            <div class="card-label">PLAYER PROFILE</div>
+            <div class="badge">● ACCOUNT ACTIVE</div>
+        </div>
+
+        <div class="profile-content">
+
+            <div class="avatar">
+                {{ session.get('username', 'P')[0]|upper }}
+            </div>
+
+            <div class="player-info">
+                <h2>{{ session.get('username', 'PLAYER') }}</h2>
+
+                <p>
+                    PLAYER ID:
+                    <span>KN-{{ session.get('uid', '0000') }}</span>
+                </p>
+
+                <p>
+                    STATUS:
+                    <span>VERIFIED PLAYER</span>
+                </p>
+            </div>
+
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="features-title">YOUR COMMUNITY</div>
+
+        <div class="features">
+
+            <div class="feature">
+                <div class="icon">🎮</div>
+                <h3>GAMING COMMUNITY</h3>
+                <p>Connect with fellow players and enjoy the community.</p>
+            </div>
+
+            <div class="feature">
+                <div class="icon">🛡️</div>
+                <h3>SECURE ACCOUNT</h3>
+                <p>Your account is registered and protected.</p>
+            </div>
+
+            <div class="feature">
+                <div class="icon">🚀</div>
+                <h3>MORE FEATURES</h3>
+                <p>New player features and updates are coming soon.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <div class="logout-area">
+        <a href="/logout" class="logout-btn">⏻ LOG OUT</a>
+    </div>
+
+</main>
+
+<footer>
+    © 2026 KHMER NOVA • COMMUNITY PLATFORM
+</footer>
+
+</body>
+</html>
