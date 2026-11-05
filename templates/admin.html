@@ -1,1 +1,338 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KHMER NOVA | ADMIN PANEL</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: #030712;
+    color: #e5f0ff;
+    font-family: 'Rajdhani', sans-serif;
+    padding: 30px 18px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 35px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #15314d;
+}
+
+.logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 23px;
+    font-weight: 800;
+    color: #00eaff;
+    letter-spacing: 2px;
+}
+
+.logo span {
+    color: #ffffff;
+}
+
+.admin-label {
+    color: #ff3864;
+    font-size: 13px;
+    letter-spacing: 3px;
+    margin-top: 8px;
+}
+
+.logout {
+    text-decoration: none;
+    color: #ff5377;
+    border: 1px solid #ff3864;
+    padding: 10px 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: .2s;
+}
+
+.logout:hover {
+    background: #ff3864;
+    color: white;
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(23px, 5vw, 36px);
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #7e9dbb;
+    margin-bottom: 30px;
+    font-size: 17px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: #071426;
+    border: 1px solid #123453;
+    padding: 22px;
+}
+
+.stat-title {
+    color: #7899b8;
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+.stat-number {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    color: #00eaff;
+    margin-top: 10px;
+}
+
+.search-box {
+    width: 100%;
+    background: #071426;
+    border: 1px solid #173c5b;
+    outline: none;
+    color: white;
+    padding: 15px;
+    font-family: inherit;
+    font-size: 17px;
+    margin-bottom: 20px;
+}
+
+.search-box:focus {
+    border-color: #00eaff;
+    box-shadow: 0 0 12px #00eaff22;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    border: 1px solid #15314d;
+    background: #07101d;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 750px;
+}
+
+thead {
+    background: #0b1e32;
+}
+
+th {
+    color: #00eaff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-align: left;
+    padding: 17px;
+}
+
+td {
+    padding: 16px;
+    border-top: 1px solid #10263b;
+    color: #c6d9ee;
+    font-size: 16px;
+}
+
+tr:hover td {
+    background: #0a1c2d;
+}
+
+.player-id {
+    color: #6689a8;
+    font-size: 13px;
+}
+
+.delete-btn {
+    border: 1px solid #ff3864;
+    background: transparent;
+    color: #ff5377;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+}
+
+.delete-btn:hover {
+    background: #ff3864;
+    color: white;
+}
+
+.admin-badge {
+    color: #00eaff;
+    font-size: 12px;
+    border: 1px solid #00eaff;
+    padding: 5px 9px;
+}
+
+.empty {
+    text-align: center;
+    color: #68839d;
+    padding: 35px;
+}
+
+.footer {
+    margin-top: 25px;
+    color: #48647e;
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 20px 10px;
+    }
+
+    .logo {
+        font-size: 19px;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+    <header class="header">
+        <div>
+            <div class="logo">KHMER <span>NOVA</span></div>
+            <div class="admin-label">◆ ADMINISTRATOR SYSTEM</div>
+        </div>
+
+        <a href="/logout" class="logout">LOG OUT ↗</a>
+    </header>
+
+    <h1>CONTROL CENTER</h1>
+    <p class="subtitle">Welcome, Administrator. Manage your community players.</p>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-title">TOTAL REGISTERED PLAYERS</div>
+            <div class="stat-number" id="totalCount">{{ users|length }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">SYSTEM STATUS</div>
+            <div class="stat-number">ONLINE</div>
+        </div>
+    </div>
+
+    <input
+        type="text"
+        id="search"
+        class="search-box"
+        placeholder="⌕ Search username or email..."
+        autocomplete="off"
+    >
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>PLAYER ID</th>
+                    <th>USERNAME</th>
+                    <th>EMAIL</th>
+                    <th>REGISTERED</th>
+                    <th>ACTION</th>
+                </tr>
+            </thead>
+
+            <tbody id="playerTable">
+                {% for user in users %}
+                <tr>
+                    <td class="player-id">KN-{{ user.id }}</td>
+                    <td>
+                        {% if user.username.lower() == 'ratanasorn13' %}
+                            <span class="admin-badge">{{ user.username }} (ADMIN)</span>
+                        {% else %}
+                            {{ user.username }}
+                        {% endif %}
+                    </td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.created_at %}
+                            {{ user.created_at.strftime('%Y-%m-%d') }}
+                        {% else %}
+                            Unknown
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.username.lower() == 'ratanasorn13' %}
+                            <span class="admin-badge">PROTECTED</span>
+                        {% else %}
+                            <form
+                                method="POST"
+                                action="/admin/delete/{{ user.id }}"
+                                onsubmit="return confirm('Are you sure you want to delete {{ user.username }}? This cannot be undone.');"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="{{ csrf_token }}"
+                                >
+                                <button type="submit" class="delete-btn">
+                                    DELETE
+                                </button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if not users %}
+            <div class="empty">NO REGISTERED PLAYERS FOUND</div>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        KHMER NOVA • SECURE ADMINISTRATION • 2026
+    </div>
+
+</div>
+
+<script>
+const search = document.getElementById('search');
+const rows = document.querySelectorAll('#playerTable tr');
+
+search.addEventListener('input', function () {
+    const query = this.value.toLowerCase().trim();
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+    });
+});
+</script>
+
+</body>
+</html>
+
