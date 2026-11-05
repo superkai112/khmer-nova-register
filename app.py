@@ -50,40 +50,6 @@ def login():
     return render_template("login.html")
 
 
-
-@app.post("/api/login")
-def auth():
-    data = get_data()
-
-    username = data.get("username", "").strip()
-    password = data.get("password", "")
-
-    with conn() as c:
-        row = c.execute(
-            """
-            SELECT * FROM users
-            WHERE username = ? COLLATE NOCASE
-               OR email = ? COLLATE NOCASE
-            """,
-            (username, username)
-        ).fetchone()
-
-    if not row:
-        return jsonify(message="Account not found. Please register again."), 404
-
-    if not check_password_hash(row["password_hash"], password):
-        return jsonify(message="Incorrect password. Please check your password."), 401
-
-    session.clear()
-    session["uid"] = row["id"]
-    session["username"] = row["username"]
-
-    return jsonify(
-        message="Login successful!",
-        redirect="/dashboard"
-    ), 200
-
-
 @app.post("/api/login")
 def auth():
     data = get_data()
