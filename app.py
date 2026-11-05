@@ -50,38 +50,43 @@ def login():
     return render_template("login.html")
 
 
-@app.post("/api/register")
-def register():
+
+@app.post("/api/login")
+def auth():
     data = get_data()
 
-    u = data.get("username", "").strip()
-    e = data.get("email", "").strip().lower()
-    p = data.get("password", "")
-    q = data.get("confirm", "")
+    username = data.get("username", "").strip()
+    password = data.get("password", "")
 
-    if not re.fullmatch(r"[A-Za-z0-9_]{3,24}", u):
-        return jsonify(message="Username must be 3–24 letters, numbers or underscores."), 400
+    with conn() as c:
+        row = c.execute(
+            """
+            SELECT * FROM users
+            WHERE username = ? COLLATE NOCASE
+               OR email = ? COLLATE NOCASE
+            """,
+            (username, username)
+        ).fetchone()
 
-    if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", e):
-        return jsonify(message="Please enter a valid email address."), 400
+    if not row:
+        return jsonify(
+            message="Account not found. Please register again."
+        ), 404
 
-    if len(p) < 10:
-        return jsonify(message="Password must be at least 10 characters."), 400
+    if not check_password_hash(row["password_hash"], password):
+        return jsonify(
+            message="Incorrect password. Please check your password."
+        ), 401
 
-    if p != q:
-        return jsonify(message="Passwords do not match."), 400
+    session.clear()
+    session["uid"] = row["id"]
+    session["username"] = row["username"]
 
-    try:
-        with conn() as c:
-            c.execute(
-                "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
-                (u, e, generate_password_hash(p))
-            )
+    return jsonify(
+        message="Login successful!",
+        redirect="https://khmer-nova-backend.onrender.com/dashboard"
+    ), 200
 
-    except sqlite3.IntegrityError:
-        return jsonify(message="Username or email already exists."), 409
-
-    return jsonify(message="Account created successfully! You can now log in."), 201
 
 
 @app.post("/api/login")
