@@ -46,15 +46,79 @@ footer{text-align:center;color:#7892a9;font-size:12px;letter-spacing:2px;padding
 <div class="login">Already have an account? <a href="https://mirae-labs.com/register?client=ros" target="_blank" rel="noopener">Official ROS registration ↗</a></div>
 </section></main><footer>KHMER NOVA • R.O.S KONKHMER <br><br><b>DEVELOPED BY KHMER NOVA</b></footer>
 <script>
-const form=document.getElementById('form'),msg=document.getElementById('message'),btn=document.getElementById('submit');
-document.querySelectorAll('[data-toggle]').forEach(b=>b.addEventListener('click',()=>{const el=document.getElementById(b.dataset.toggle);el.type=el.type==='password'?'text':'password';b.textContent=el.type==='password'?'◉':'◎'}));
-document.getElementById('termsLink').addEventListener('click',e=>{e.preventDefault();show('Official ROS Legacy terms apply when registering through its official service.','info')});
-function show(text,type){msg.textContent=text;msg.className='message show '+type}
-form.addEventListener('submit',async e=>{e.preventDefault();msg.className='message';if(!form.reportValidity())return;
-if(document.getElementById('password').value!==document.getElementById('confirm').value){show('Passwords do not match. Please check again.','error');return}
-if(!document.getElementById('terms').checked){show('Please accept the checkbox to continue.','error');return}
-btn.disabled=true;btn.textContent='CHECKING…';
-try{const response = await fetch('https://khmer-nova-backend.onrender.com/api/register', {,
-finally{btn.disabled=false;btn.textContent='CREATE ACCOUNT  ↗'}
+
+<script>
+const form = document.getElementById('form');
+const msg = document.getElementById('message');
+const btn = document.getElementById('submit');
+
+document.querySelectorAll('[data-toggle]').forEach(button => {
+    button.addEventListener('click', () => {
+        const input = document.getElementById(button.dataset.toggle);
+        input.type = input.type === 'password' ? 'text' : 'password';
+    });
 });
+
+function showMessage(text, type) {
+    msg.textContent = text;
+    msg.className = 'message show ' + type;
+}
+
+form.addEventListener('submit', async event => {
+    event.preventDefault();
+
+    if (!form.reportValidity()) return;
+
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirm').value;
+
+    if (password !== confirm) {
+        showMessage('Passwords do not match!', 'error');
+        return;
+    }
+
+    if (!document.getElementById('terms').checked) {
+        showMessage('Please accept the terms.', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'CREATING ACCOUNT...';
+
+    try {
+        const response = await fetch(
+            'https://khmer-nova-backend.onrender.com/api/register',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    email: email,
+                    password: password,
+                    confirm: confirm
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+            showMessage(data.message || 'Account created successfully!', 'info');
+        } else {
+            showMessage(data.message || 'Registration failed.', 'error');
+        }
+
+    } catch (error) {
+        showMessage('Cannot connect to KHMER NOVA server.', 'error');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'CREATE ACCOUNT ↗';
+});
+</script>
+
 </script></body></html>
