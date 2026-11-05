@@ -69,14 +69,10 @@ def auth():
         ).fetchone()
 
     if not row:
-        return jsonify(
-            message="Account not found. Please register again."
-        ), 404
+        return jsonify(message="Account not found. Please register again."), 404
 
     if not check_password_hash(row["password_hash"], password):
-        return jsonify(
-            message="Incorrect password. Please check your password."
-        ), 401
+        return jsonify(message="Incorrect password. Please check your password."), 401
 
     session.clear()
     session["uid"] = row["id"]
@@ -84,9 +80,8 @@ def auth():
 
     return jsonify(
         message="Login successful!",
-        redirect="https://khmer-nova-backend.onrender.com/dashboard"
+        redirect="/dashboard"
     ), 200
-
 
 
 @app.post("/api/login")
