@@ -105,7 +105,7 @@ def register():
 
 # LOGIN API — ONLY ONE LOGIN FUNCTION
 @app.route("/api/login", methods=["POST"])
-def auth():
+def login_api():
     data = get_data()
 
     username = data.get("username", "").strip()
