@@ -408,5 +408,32 @@
     © 2026 KHMER NOVA • COMMUNITY PLATFORM
 </footer>
 
+<script>
+// Send heartbeat immediately and then every 20 seconds
+async function sendHeartbeat() {
+    try {
+        await fetch('/api/heartbeat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        });
+    } catch (error) {
+        console.log('Heartbeat connection error.');
+    }
+}
+
+sendHeartbeat();
+setInterval(sendHeartbeat, 20000);
+
+// Send heartbeat again when player returns to the tab
+document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) {
+        sendHeartbeat();
+    }
+});
+</script>
+
 </body>
 </html>
