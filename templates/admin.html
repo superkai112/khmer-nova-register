@@ -141,7 +141,7 @@ h1 {
 table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 850px;
+    min-width: 1120px;
 }
 
 thead {
@@ -247,11 +247,28 @@ tr:hover td {
     font: inherit;
 }
 
-.ban-btn, .unban-btn {
+.ban-btn, .unban-btn, .diamond-btn {
     padding: 8px 12px;
     cursor: pointer;
     font: inherit;
     font-weight: 700;
+}
+
+.diamond-btn {
+    color: #00eaff;
+    border: 1px solid #00eaff;
+    background: transparent;
+}
+
+.diamond-btn:hover {
+    background: #00eaff;
+    color: #00131b;
+}
+
+.diamond-balance {
+    color: #00eaff;
+    font-weight: 700;
+    white-space: nowrap;
 }
 
 .ban-btn {
@@ -368,6 +385,8 @@ tr:hover td {
                     <th>PLAYER ID</th>
                     <th>USERNAME</th>
                     <th>EMAIL</th>
+                    <th>DIAMONDS</th>
+                    <th>ADD DIAMONDS</th>
                     <th>ONLINE STATUS</th>
                     <th>ACCOUNT STATUS</th>
                     <th>LAST SEEN</th>
@@ -392,6 +411,22 @@ tr:hover td {
                     </td>
 
                     <td>{{ user.email }}</td>
+
+                    <td class="diamond-balance">
+                        💎 {{ "{:,}".format(user.diamonds or 0) }}
+                    </td>
+
+                    <td>
+                        <form method="POST"
+                              action="/admin/add-diamonds/{{ user.id }}"
+                              class="action-form"
+                              onsubmit="return confirm('Add diamonds to {{ user.username }}?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <input type="number" name="amount" min="1" max="1000000000"
+                                   step="1" placeholder="Amount" required>
+                            <button type="submit" class="diamond-btn">ADD DIAMONDS</button>
+                        </form>
+                    </td>
 
                     <td>
                         {% if user.is_online %}
