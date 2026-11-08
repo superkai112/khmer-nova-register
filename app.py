@@ -82,6 +82,12 @@ def init_db():
             ADD COLUMN IF NOT EXISTS banned_by TEXT
         """)
 
+        # Persistent player diamond balance
+        db.execute("""
+            ALTER TABLE users
+            ADD COLUMN IF NOT EXISTS diamonds BIGINT NOT NULL DEFAULT 0
+        """)
+
         db.execute("""
             CREATE UNIQUE INDEX IF NOT EXISTS
             users_username_lower_unique
@@ -240,6 +246,7 @@ def admin_panel():
                     id,
                     username,
                     email,
+                    diamonds,
                     created_at,
                     last_seen,
                     banned_at,
@@ -298,6 +305,46 @@ def admin_panel():
         print("Admin panel error:", e)
 
         return "Could not load accounts. Please try again.", 500
+
+
+# ---------- ADD PLAYER DIAMONDS ----------
+
+@app.route("/admin/add-diamonds/<int:user_id>", methods=["POST"])
+def admin_add_diamonds(user_id):
+    if "uid" not in session:
+        return redirect("/login")
+    if not is_admin():
+        return "Access denied. Admins only.", 403
+
+    submitted_token = request.form.get("csrf_token", "")
+    session_token = session.get("admin_csrf", "")
+    if not session_token or not secrets.compare_digest(submitted_token, session_token):
+        return "Invalid security token. Please refresh the page.", 403
+
+    raw_amount = str(request.form.get("amount", "")).strip()
+    if not raw_amount.isdigit():
+        return "Please enter a valid whole number of diamonds.", 400
+
+    amount = int(raw_amount)
+    if amount < 1 or amount > 1_000_000_000:
+        return "Amount must be between 1 and 1,000,000,000 diamonds.", 400
+
+    try:
+        with get_db() as db:
+            target = db.execute("""
+                UPDATE users
+                SET diamonds = diamonds + %s
+                WHERE id = %s
+                RETURNING username, diamonds
+            """, (amount, user_id)).fetchone()
+
+        if not target:
+            return "Player account not found.", 404
+
+        return redirect("/admin")
+    except Exception as e:
+        print("Add diamonds error:", e)
+        return "Could not add diamonds. Please try again.", 500
 
 
 # ---------- BAN / UNBAN PLAYERS ----------
