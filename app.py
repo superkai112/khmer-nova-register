@@ -226,6 +226,36 @@ def dashboard():
     return render_template("dashboard.html")
 
 
+@app.route("/balance")
+def balance_page():
+    if "uid" not in session:
+        return redirect("/login")
+
+    try:
+        with get_db() as db:
+            user = db.execute("""
+                SELECT username, diamonds
+                FROM users
+                WHERE id = %s
+            """, (session["uid"],)).fetchone()
+
+        if not user:
+            session.clear()
+            return redirect("/login")
+
+        response = app.make_response(render_template(
+            "balance.html",
+            username=user["username"],
+            diamonds=int(user["diamonds"] or 0)
+        ))
+        response.headers["Cache-Control"] = "no-store, private"
+        return response
+
+    except Exception as e:
+        print("Balance page error:", e)
+        return "Could not load your diamond balance. Please try again.", 500
+
+
 # ---------- ADMIN PANEL ----------
 
 @app.route("/admin")
