@@ -163,6 +163,42 @@ def is_active_ban(user):
     return expires_at > datetime.now(timezone.utc)
 
 
+@app.before_request
+def enforce_website_account_ban():
+    # A ban must also end an already-authenticated website session.
+    if "uid" not in session:
+        return None
+
+    if request.endpoint in {"login_page", "login_api", "logout", "register_page", "register_api"}:
+        return None
+
+    try:
+        with get_db() as db:
+            user = db.execute("""
+                SELECT banned_at, ban_expires_at
+                FROM users
+                WHERE id = %s
+            """, (session["uid"],)).fetchone()
+
+        if user is None or is_active_ban(user):
+            session.clear()
+            if request.path.startswith("/api/"):
+                return jsonify({
+                    "success": False,
+                    "banned": True,
+                    "message": "This account is banned or unavailable. Please log in again."
+                }), 403
+            return redirect("/login")
+
+    except Exception as e:
+        print("Account access check error:", e)
+        # Fail closed for authenticated website requests if account status
+        # cannot be verified.
+        return "Could not verify account status. Please try again.", 503
+
+    return None
+
+
 # ---------- PAGES ----------
 
 @app.route("/")
