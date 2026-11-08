@@ -64,6 +64,24 @@ def init_db():
             ADD COLUMN IF NOT EXISTS last_seen TIMESTAMPTZ
         """)
 
+        # Account moderation fields
+        db.execute("""
+            ALTER TABLE users
+            ADD COLUMN IF NOT EXISTS banned_at TIMESTAMPTZ
+        """)
+        db.execute("""
+            ALTER TABLE users
+            ADD COLUMN IF NOT EXISTS ban_reason TEXT
+        """)
+        db.execute("""
+            ALTER TABLE users
+            ADD COLUMN IF NOT EXISTS ban_expires_at TIMESTAMPTZ
+        """)
+        db.execute("""
+            ALTER TABLE users
+            ADD COLUMN IF NOT EXISTS banned_by TEXT
+        """)
+
         db.execute("""
             CREATE UNIQUE INDEX IF NOT EXISTS
             users_username_lower_unique
@@ -133,6 +151,18 @@ def is_admin():
     )
 
 
+def is_active_ban(user):
+    """Return True for a permanent ban or a ban that has not expired."""
+    if not user or not user.get("banned_at"):
+        return False
+
+    expires_at = user.get("ban_expires_at")
+    if expires_at is None:
+        return True
+
+    return expires_at > datetime.now(timezone.utc)
+
+
 # ---------- PAGES ----------
 
 @app.route("/")
@@ -176,6 +206,15 @@ def admin_panel():
                     email,
                     created_at,
                     last_seen,
+                    banned_at,
+                    ban_reason,
+                    ban_expires_at,
+                    CASE
+                        WHEN banned_at IS NOT NULL
+                         AND (ban_expires_at IS NULL OR ban_expires_at > NOW())
+                        THEN TRUE
+                        ELSE FALSE
+                    END AS is_banned,
                     CASE
                         WHEN last_seen >= NOW() - INTERVAL '60 seconds'
                         THEN TRUE
@@ -198,6 +237,14 @@ def admin_panel():
                 FROM users
             """).fetchone()["total"]
 
+            # Count currently banned players
+            banned_count = db.execute("""
+                SELECT COUNT(*) AS total
+                FROM users
+                WHERE banned_at IS NOT NULL
+                  AND (ban_expires_at IS NULL OR ban_expires_at > NOW())
+            """).fetchone()["total"]
+
         # CSRF security token
         if "admin_csrf" not in session:
             session["admin_csrf"] = secrets.token_urlsafe(32)
@@ -207,6 +254,7 @@ def admin_panel():
             users=users,
             online_count=online_count,
             total_count=total_count,
+            banned_count=banned_count,
             csrf_token=session["admin_csrf"]
         )
 
@@ -214,6 +262,99 @@ def admin_panel():
         print("Admin panel error:", e)
 
         return "Could not load accounts. Please try again.", 500
+
+
+# ---------- BAN / UNBAN PLAYERS ----------
+
+@app.route("/admin/ban/<int:user_id>", methods=["POST"])
+def admin_ban_user(user_id):
+    if "uid" not in session:
+        return redirect("/login")
+    if not is_admin():
+        return "Access denied. Admins only.", 403
+
+    submitted_token = request.form.get("csrf_token", "")
+    session_token = session.get("admin_csrf", "")
+    if not session_token or not secrets.compare_digest(submitted_token, session_token):
+        return "Invalid security token. Please refresh the page.", 403
+
+    if user_id == session["uid"]:
+        return "You cannot ban your own admin account.", 400
+
+    reason = str(request.form.get("reason", "")).strip()
+    duration = str(request.form.get("duration", "permanent")).strip().lower()
+    if not reason:
+        return "Please provide a ban reason.", 400
+    if len(reason) > 500:
+        return "Ban reason must be 500 characters or fewer.", 400
+    if duration not in {"permanent", "1", "7", "30"}:
+        return "Invalid ban duration.", 400
+
+    expires_at = None
+    if duration != "permanent":
+        expires_at = datetime.now(timezone.utc) + timedelta(days=int(duration))
+
+    try:
+        with get_db() as db:
+            target = db.execute(
+                "SELECT id, username FROM users WHERE id = %s",
+                (user_id,)
+            ).fetchone()
+            if not target:
+                return "Player account not found.", 404
+            if target["username"].lower() == ADMIN_USERNAME.lower():
+                return "The administrator account is protected.", 400
+
+            db.execute("""
+                UPDATE users
+                SET banned_at = NOW(),
+                    ban_reason = %s,
+                    ban_expires_at = %s,
+                    banned_by = %s
+                WHERE id = %s
+            """, (reason, expires_at, session.get("username"), user_id))
+
+            # Immediately revoke all existing game login tokens.
+            db.execute("""
+                UPDATE game_sessions
+                SET revoked_at = NOW()
+                WHERE user_id = %s AND revoked_at IS NULL
+            """, (user_id,))
+
+        return redirect("/admin")
+    except Exception as e:
+        print("Ban user error:", e)
+        return "Could not ban this player. Please try again.", 500
+
+
+@app.route("/admin/unban/<int:user_id>", methods=["POST"])
+def admin_unban_user(user_id):
+    if "uid" not in session:
+        return redirect("/login")
+    if not is_admin():
+        return "Access denied. Admins only.", 403
+
+    submitted_token = request.form.get("csrf_token", "")
+    session_token = session.get("admin_csrf", "")
+    if not session_token or not secrets.compare_digest(submitted_token, session_token):
+        return "Invalid security token. Please refresh the page.", 403
+
+    try:
+        with get_db() as db:
+            db.execute("""
+                UPDATE users
+                SET banned_at = NULL,
+                    ban_reason = NULL,
+                    ban_expires_at = NULL,
+                    banned_by = NULL
+                WHERE id = %s
+                  AND LOWER(username) <> LOWER(%s)
+            """, (user_id, ADMIN_USERNAME))
+
+        return redirect("/admin")
+    except Exception as e:
+        print("Unban user error:", e)
+        return "Could not unban this player. Please try again.", 500
 
 
 # ---------- DELETE USER ----------
@@ -365,7 +506,8 @@ def login_api():
         with get_db() as db:
 
             user = db.execute("""
-                SELECT id, username, email, password_hash
+                SELECT id, username, email, password_hash,
+                       banned_at, ban_expires_at, ban_reason
                 FROM users
                 WHERE LOWER(username) = LOWER(%s)
                    OR LOWER(email) = LOWER(%s)
@@ -379,6 +521,15 @@ def login_api():
                 "success": False,
                 "message": "Invalid username/email or password."
             }), 401
+
+        if is_active_ban(user):
+            return jsonify({
+                "success": False,
+                "banned": True,
+                "message": "This account is banned.",
+                "reason": user.get("ban_reason") or "No reason provided.",
+                "expires_at": user["ban_expires_at"].isoformat() if user["ban_expires_at"] else None
+            }), 403
 
         session.clear()
 
@@ -447,8 +598,15 @@ def get_game_session_user():
             WHERE game_sessions.token_hash = %s
               AND game_sessions.revoked_at IS NULL
               AND game_sessions.expires_at > %s
+              AND (
+                    users.banned_at IS NULL
+                    OR (
+                        users.ban_expires_at IS NOT NULL
+                        AND users.ban_expires_at <= %s
+                    )
+              )
             LIMIT 1
-        """, (token_hash, now)).fetchone()
+        """, (token_hash, now, now)).fetchone()
 
     return row
 
@@ -471,7 +629,8 @@ def game_login_api():
     try:
         with get_db() as db:
             user = db.execute("""
-                SELECT id, username, password_hash
+                SELECT id, username, password_hash,
+                       banned_at, ban_expires_at, ban_reason
                 FROM users
                 WHERE LOWER(username) = LOWER(%s)
                    OR LOWER(email) = LOWER(%s)
@@ -483,6 +642,15 @@ def game_login_api():
                     "success": False,
                     "message": "Invalid username/email or password."
                 }), 401
+
+            if is_active_ban(user):
+                return jsonify({
+                    "success": False,
+                    "banned": True,
+                    "message": "This account is banned.",
+                    "reason": user.get("ban_reason") or "No reason provided.",
+                    "expires_at": user["ban_expires_at"].isoformat() if user["ban_expires_at"] else None
+                }), 403
 
             raw_token = secrets.token_urlsafe(32)
             expires_at = datetime.now(timezone.utc) + timedelta(days=GAME_SESSION_DAYS)
