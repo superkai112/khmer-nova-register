@@ -2,6 +2,8 @@
 import os
 import re
 import secrets
+import hashlib
+from datetime import datetime, timedelta, timezone
 
 import psycopg
 from psycopg.rows import dict_row
@@ -72,6 +74,18 @@ def init_db():
             CREATE UNIQUE INDEX IF NOT EXISTS
             users_email_lower_unique
             ON users (LOWER(email))
+        """)
+
+        # Bearer-token sessions used by the KHMER NOVA game
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS game_sessions (
+                id BIGSERIAL PRIMARY KEY,
+                user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                token_hash TEXT UNIQUE NOT NULL,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                expires_at TIMESTAMPTZ NOT NULL,
+                revoked_at TIMESTAMPTZ
+            )
         """)
 
 
@@ -393,6 +407,165 @@ def login_api():
             "success": False,
             "message": "Server error. Please try again later."
         }), 500
+
+
+# ---------- KHMER NOVA GAME ACCOUNT API ----------
+
+GAME_SESSION_DAYS = 30
+
+
+@app.after_request
+def add_game_api_cors_headers(response):
+    # The game may be hosted on a different origin. Bearer-token requests
+    # do not use browser cookies, so wildcard origin is appropriate here.
+    if request.path.startswith("/api/game/"):
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+        response.headers["Access-Control-Max-Age"] = "86400"
+    return response
+
+
+def hash_game_token(token):
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def get_game_session_user():
+    authorization = request.headers.get("Authorization", "")
+    scheme, separator, token = authorization.partition(" ")
+    if not separator or scheme.lower() != "bearer" or not token.strip():
+        return None
+
+    token_hash = hash_game_token(token.strip())
+    now = datetime.now(timezone.utc)
+
+    with get_db() as db:
+        row = db.execute("""
+            SELECT users.id, users.username
+            FROM game_sessions
+            JOIN users ON users.id = game_sessions.user_id
+            WHERE game_sessions.token_hash = %s
+              AND game_sessions.revoked_at IS NULL
+              AND game_sessions.expires_at > %s
+            LIMIT 1
+        """, (token_hash, now)).fetchone()
+
+    return row
+
+
+@app.route("/api/game/login", methods=["POST", "OPTIONS"])
+def game_login_api():
+    if request.method == "OPTIONS":
+        return ("", 204)
+
+    data = request.get_json(silent=True) or {}
+    identifier = str(data.get("username", data.get("email", ""))).strip()
+    password = str(data.get("password", ""))
+
+    if not identifier or not password:
+        return jsonify({
+            "success": False,
+            "message": "Please enter your username/email and password."
+        }), 400
+
+    try:
+        with get_db() as db:
+            user = db.execute("""
+                SELECT id, username, password_hash
+                FROM users
+                WHERE LOWER(username) = LOWER(%s)
+                   OR LOWER(email) = LOWER(%s)
+                LIMIT 1
+            """, (identifier, identifier)).fetchone()
+
+            if not user or not check_password_hash(user["password_hash"], password):
+                return jsonify({
+                    "success": False,
+                    "message": "Invalid username/email or password."
+                }), 401
+
+            raw_token = secrets.token_urlsafe(32)
+            expires_at = datetime.now(timezone.utc) + timedelta(days=GAME_SESSION_DAYS)
+
+            db.execute("""
+                INSERT INTO game_sessions (user_id, token_hash, expires_at)
+                VALUES (%s, %s, %s)
+            """, (user["id"], hash_game_token(raw_token), expires_at))
+
+            db.execute("""
+                UPDATE users SET last_seen = NOW() WHERE id = %s
+            """, (user["id"],))
+
+        return jsonify({
+            "success": True,
+            "message": "Game login successful.",
+            "username": user["username"],
+            "access_token": raw_token,
+            "token_type": "Bearer",
+            "expires_at": expires_at.isoformat()
+        })
+
+    except Exception as e:
+        print("Game login error:", e)
+        return jsonify({
+            "success": False,
+            "message": "Server error. Please try again later."
+        }), 500
+
+
+@app.route("/api/game/me", methods=["GET", "OPTIONS"])
+def game_me_api():
+    if request.method == "OPTIONS":
+        return ("", 204)
+
+    try:
+        user = get_game_session_user()
+        if not user:
+            return jsonify({
+                "success": False,
+                "message": "Game session is invalid or expired. Please log in again."
+            }), 401
+
+        with get_db() as db:
+            db.execute("UPDATE users SET last_seen = NOW() WHERE id = %s", (user["id"],))
+
+        return jsonify({
+            "success": True,
+            "username": user["username"]
+        })
+
+    except Exception as e:
+        print("Game session check error:", e)
+        return jsonify({
+            "success": False,
+            "message": "Could not verify game session."
+        }), 500
+
+
+@app.route("/api/game/logout", methods=["POST", "OPTIONS"])
+def game_logout_api():
+    if request.method == "OPTIONS":
+        return ("", 204)
+
+    authorization = request.headers.get("Authorization", "")
+    scheme, separator, token = authorization.partition(" ")
+
+    if separator and scheme.lower() == "bearer" and token.strip():
+        try:
+            with get_db() as db:
+                db.execute("""
+                    UPDATE game_sessions
+                    SET revoked_at = NOW()
+                    WHERE token_hash = %s AND revoked_at IS NULL
+                """, (hash_game_token(token.strip()),))
+        except Exception as e:
+            print("Game logout error:", e)
+            return jsonify({
+                "success": False,
+                "message": "Could not log out. Please try again."
+            }), 500
+
+    return jsonify({"success": True, "message": "Logged out."})
 
 
 # ---------- HEALTH CHECK ----------
