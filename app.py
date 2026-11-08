@@ -675,7 +675,7 @@ def get_game_session_user():
 
     with get_db() as db:
         row = db.execute("""
-            SELECT users.id, users.username
+            SELECT users.id, users.username, users.diamonds
             FROM game_sessions
             JOIN users ON users.id = game_sessions.user_id
             WHERE game_sessions.token_hash = %s
@@ -712,7 +712,7 @@ def game_login_api():
     try:
         with get_db() as db:
             user = db.execute("""
-                SELECT id, username, password_hash,
+                SELECT id, username, password_hash, diamonds,
                        banned_at, ban_expires_at, ban_reason
                 FROM users
                 WHERE LOWER(username) = LOWER(%s)
@@ -751,6 +751,7 @@ def game_login_api():
             "success": True,
             "message": "Game login successful.",
             "username": user["username"],
+            "diamonds": int(user["diamonds"] or 0),
             "access_token": raw_token,
             "token_type": "Bearer",
             "expires_at": expires_at.isoformat()
@@ -782,7 +783,8 @@ def game_me_api():
 
         return jsonify({
             "success": True,
-            "username": user["username"]
+            "username": user["username"],
+            "diamonds": int(user["diamonds"] or 0)
         })
 
     except Exception as e:
