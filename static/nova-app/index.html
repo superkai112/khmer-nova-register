@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#061326"><link rel="manifest" href="manifest.webmanifest">
+<title>KHMER NOVA</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,#123a68,#061326 55%,#020711);color:#eaf7ff;font:16px Arial,sans-serif;display:grid;place-items:center;padding:22px}
+main{width:min(440px,100%);border:1px solid #168acb;border-radius:18px;padding:28px;background:#07182beF;box-shadow:0 0 35px #008cff35}
+h1{text-align:center;letter-spacing:.15em;color:#51d5ff;margin:0 0 8px}p.sub{text-align:center;color:#91b9d5;margin:0 0 24px}
+nav{display:flex;gap:8px;margin-bottom:18px}button{cursor:pointer}nav button{flex:1;padding:12px;border:1px solid #24628c;border-radius:8px;background:#0a223a;color:#bcecff}nav button.active,.primary{background:linear-gradient(90deg,#0568d7,#00a9e8);color:white;border:0}
+label{display:block;margin:13px 0 6px;color:#a9dfff;font-size:13px}input{width:100%;padding:13px;border-radius:8px;border:1px solid #285477;background:#03101f;color:white;font-size:16px}
+.primary{width:100%;padding:14px;border-radius:8px;font-weight:bold;margin-top:18px}.message{min-height:22px;color:#78dbff;font-size:14px;margin-top:14px}.small{text-align:center;color:#7194b2;font-size:12px;margin-top:20px}
+</style></head>
+<body><main><h1>KHMER NOVA</h1><p class="sub">RISE TO LEGEND</p>
+<nav><button id="loginTab" class="active" type="button">LOG IN</button><button id="registerTab" type="button">CREATE ACCOUNT</button></nav>
+<form id="accountForm">
+<div id="usernameWrap"><label for="username">USERNAME OR EMAIL</label><input id="username" autocomplete="username" required></div>
+<div id="emailWrap" hidden><label for="email">EMAIL</label><input id="email" type="email" autocomplete="email"></div>
+<label for="password">PASSWORD</label><input id="password" type="password" autocomplete="current-password" required minlength="10">
+<div id="confirmWrap" hidden><label for="confirm">CONFIRM PASSWORD</label><input id="confirm" type="password" autocomplete="new-password"></div>
+<button class="primary" id="submit" type="submit">LOG IN</button><div class="message" id="message" role="status"></div>
+</form><p class="small">Independent KHMER NOVA account portal</p></main>
+<script>
+const $=id=>document.getElementById(id);let mode="login";
+function setMode(next){mode=next;$("loginTab").classList.toggle("active",mode==="login");$("registerTab").classList.toggle("active",mode==="register");$("emailWrap").hidden=mode!=="register";$("confirmWrap").hidden=mode!=="register";$("usernameWrap").querySelector("label").textContent=mode==="login"?"USERNAME OR EMAIL":"USERNAME";$("username").type="text";$("password").autocomplete=mode==="login"?"current-password":"new-password";$("submit").textContent=mode==="login"?"LOG IN":"CREATE ACCOUNT";$("message").textContent="";}
+$("loginTab").onclick=()=>setMode("login");$("registerTab").onclick=()=>setMode("register");
+$("accountForm").onsubmit=async e=>{e.preventDefault();$("submit").disabled=true;$("message").textContent="Please wait…";try{const payload={username:$("username").value.trim(),password:$("password").value};if(mode==="register"){payload.email=$("email").value.trim();payload.confirm=$("confirm").value;}const res=await fetch(mode==="login"?"/api/login":"/api/register",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"same-origin",body:JSON.stringify(payload)});const data=await res.json();$("message").textContent=data.message||"Request completed.";if(res.ok&&mode==="login"&&data.success){location.href=data.redirect||"/dashboard";}else if(res.ok&&mode==="register"){setMode("login");$("username").value=payload.username;}}catch(err){$("message").textContent="Could not connect. Please try again.";}finally{$("submit").disabled=false;}};
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script></body></html>
