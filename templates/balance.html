@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#050812">
+    <title>KHMER NOVA | Diamond Balance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh; padding: 24px;
+            display: grid; place-items: center;
+            color: #eaf6ff; background: #050812;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        body::before {
+            content: ""; position: fixed; inset: 0; pointer-events: none;
+            background: radial-gradient(ellipse at 20% 20%, #10294c80, transparent 50%),
+                        radial-gradient(ellipse at 80% 80%, #30104b70, transparent 50%);
+        }
+        .grid {
+            position: fixed; inset: 0; pointer-events: none;
+            background-image: linear-gradient(#00e5ff08 1px, transparent 1px),
+                              linear-gradient(90deg, #00e5ff08 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        main {
+            position: relative; width: min(100%, 520px); padding: 34px;
+            border: 1px solid #00e5ff45; border-radius: 18px;
+            background: linear-gradient(145deg, #0b172a, #101025);
+            box-shadow: 0 20px 70px #0008, 0 0 35px #00e5ff0d;
+            text-align: center;
+        }
+        .brand {
+            color: #00e5ff; font: 800 17px 'Orbitron', sans-serif;
+            letter-spacing: 3px; margin-bottom: 34px;
+        }
+        .brand span { color: white; }
+        .eyebrow { color: #91a9c9; font-size: 12px; letter-spacing: 4px; }
+        h1 {
+            margin-top: 12px; font: 700 clamp(22px, 5vw, 30px) 'Orbitron', sans-serif;
+        }
+        .username { color: #00e5ff; overflow-wrap: anywhere; }
+        .gem {
+            width: 76px; height: 76px; margin: 30px auto 18px;
+            display: grid; place-items: center; border-radius: 22px;
+            background: #00e5ff12; border: 1px solid #00e5ff60;
+            font-size: 38px; box-shadow: 0 0 28px #00e5ff18;
+        }
+        .label { color: #91a9c9; font: 600 11px 'Orbitron', sans-serif; letter-spacing: 3px; }
+        .amount {
+            margin: 12px 0 8px; color: #7dffcb;
+            font: 800 clamp(36px, 10vw, 54px) 'Orbitron', sans-serif;
+            overflow-wrap: anywhere; text-shadow: 0 0 24px #7dffcb25;
+        }
+        .description { color: #8499b5; font-size: 16px; }
+        .rule { height: 1px; margin: 28px 0; background: linear-gradient(90deg, transparent, #00e5ff50, transparent); }
+        .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            display: inline-block; padding: 13px 18px; border-radius: 8px;
+            text-decoration: none; font: 600 11px 'Orbitron', sans-serif;
+            letter-spacing: 1px; transition: .2s;
+        }
+        .refresh { color: #06111c; background: #00e5ff; border: 1px solid #00e5ff; }
+        .back { color: #b9cbe0; border: 1px solid #ffffff25; background: #ffffff08; }
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.12); }
+        .foot { margin-top: 26px; color: #52627c; font-size: 11px; letter-spacing: 1px; }
+        @media (max-width: 480px) { main { padding: 26px 20px; } }
+    </style>
+</head>
+<body>
+    <div class="grid"></div>
+    <main>
+        <div class="brand">KHMER <span>NOVA</span></div>
+        <div class="eyebrow">PLAYER ACCOUNT</div>
+        <h1>DIAMOND <span class="username">BALANCE</span></h1>
+        <div class="gem" aria-hidden="true">💎</div>
+        <div class="label">ACCOUNT HOLDER</div>
+        <p style="margin:8px 0 24px;font-size:20px;font-weight:700;overflow-wrap:anywhere;">{{ username }}</p>
+        <div class="label">YOUR DIAMONDS</div>
+        <div class="amount">{{ "{:,}".format(diamonds) }}</div>
+        <p class="description">Your current KHMER NOVA account balance</p>
+        <div class="rule"></div>
+        <div class="actions">
+            <a class="btn refresh" href="/balance">↻ REFRESH BALANCE</a>
+            <a class="btn back" href="/dashboard">BACK TO DASHBOARD</a>
+        </div>
+        <div class="foot">BALANCE IS READ DIRECTLY FROM YOUR ACCOUNT</div>
+    </main>
+</body>
+</html>
